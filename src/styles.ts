@@ -39,4 +39,5 @@ export const customStyles = {
     cursor: "pointer",
     color: "#35495E",
   },
+  spinnerSize: isMobile ? 40 : 21,
 };

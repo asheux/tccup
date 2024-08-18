@@ -1,5 +1,24 @@
 import { connect } from "react-redux";
 
 import PublicPage from "src/components/PublicPage";
+import { saveThoughtAction } from "src/redux/actions/thought";
+import { getThoughtsAction } from "src/redux/actions/thoughts";
+import { saveVoteAction } from "src/redux/actions/vote";
 
-export default PublicPage;
+/**
+ * map state to props or updates the
+ * component with infomation from the store
+ * using the action creators
+ *  @param {*} object
+ */
+const mapStateToProps = (state) => ({
+  thought: state.thought,
+  thoughts: state.thoughts,
+  vote: state.vote,
+});
+
+export default connect(mapStateToProps, {
+  saveThoughtAction,
+  getThoughtsAction,
+  saveVoteAction,
+})(PublicPage);

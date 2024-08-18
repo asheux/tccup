@@ -5,5 +5,24 @@ const context = {
 };
 
 export default {
-  payload: {},
+  payload: {
+    thought: context,
+    vote: context,
+    thoughts: {
+      ...context,
+      data: [],
+    },
+  },
+  thoughtpayload: {
+    name: "",
+    description: "",
+  },
+  errors: {
+    name: false,
+    description: false,
+  },
+  errorMessages: {
+    name: "",
+    description: "",
+  },
 };

@@ -1,5 +1,13 @@
 import { combineReducers } from "redux";
 
-const rootReducer = combineReducers({});
+import saveThoughtReducer from "./thought";
+import getThoughtsReducer from "./thoughts";
+import saveVoteReducer from "./vote";
+
+const rootReducer = combineReducers({
+  thought: saveThoughtReducer,
+  thoughts: getThoughtsReducer,
+  vote: saveVoteReducer,
+});
 
 export default rootReducer;

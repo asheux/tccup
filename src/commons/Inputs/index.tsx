@@ -45,14 +45,14 @@ export const CustomLabel = (props) => {
 };
 
 export const ShowError = (props) => {
-  const { show, message } = props;
+  const { show, message, color } = props;
 
   return (
     <small
       style={{
-        color: "#d32f2f",
+        color: color,
         padding: "10px",
-        border: ".5px solid #d32f2f",
+        border: `.5px solid ${color}`,
       }}
     >
       {show && message}

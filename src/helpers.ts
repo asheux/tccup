@@ -7,4 +7,5 @@ export const isDark = () => {
   return dark === "true";
 };
 
-export const dateFormatter = (date) => moment(date).format("MMM Do YYYY");
+export const dateFormatter = (date) =>
+  moment(date).format("MMM Do YYYY, h:mm:ss a");

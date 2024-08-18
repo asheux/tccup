@@ -10,33 +10,37 @@ import {
 import ThumbUpOffAltIcon from "@mui/icons-material/ThumbUpOffAlt";
 import ThumbDownOffAltIcon from "@mui/icons-material/ThumbDownOffAlt";
 import VerifiedUserIcon from "@mui/icons-material/VerifiedUser";
-import { useTheme } from "@mui/material/styles";
 
 // App related imports
 import { customStyles } from "src/styles";
 import { isMobile, dateFormatter } from "src/helpers";
 
+const tccup_logo = "/icons/tccup.png";
+const grokcoin = "/icons/grokcoin.png";
+
 const Message = (props) => {
-  const { description, name, postedOn, id } = props;
-  const theme = useTheme();
+  const {
+    description,
+    name,
+    postedOn,
+    id,
+    upvotes,
+    downvotes,
+    grokcoins,
+    handleUpvote,
+    handleDownvote,
+  } = props;
 
   return (
-    <Box
-      className="ratings-reviews-body"
-      component="div"
-      key={id}
-      sx={{
-        color: theme.palette.text.primary,
-      }}
-    >
+    <>
       <Stack spacing={2} direction="row" sx={{ p: 2 }}>
         <Box>
           <Avatar
             alt="User Profile"
-            src=""
+            src={tccup_logo}
             sx={{
-              width: 40,
-              height: 40,
+              width: 35,
+              height: 35,
             }}
           />
         </Box>
@@ -52,14 +56,39 @@ const Message = (props) => {
                 {name}
               </Typography>
             </Box>
+            <Tooltip title="Verified">
+              <VerifiedUserIcon sx={customStyles.verifiedIcon} />
+            </Tooltip>
             <Divider
               className="divider"
               orientation="vertical"
               variant="middle"
               flexItem
             />
-            <Tooltip title="Verified">
-              <VerifiedUserIcon sx={customStyles.verifiedIcon} />
+            <Tooltip title="GovCoins gained">
+              <Stack
+                sx={{ cursor: "pointer" }}
+                direction="row"
+                alignItems="center"
+                spacing={0.3}
+              >
+                <Box
+                  src={grokcoin}
+                  component="img"
+                  sx={{
+                    height: 16,
+                    width: 16,
+                  }}
+                />
+                <Typography
+                  sx={{
+                    ...customStyles.boldText,
+                    fontSize: isMobile ? 24 : 14,
+                  }}
+                >
+                  {grokcoins}
+                </Typography>
+              </Stack>
             </Tooltip>
           </Stack>
           <Typography
@@ -79,12 +108,26 @@ const Message = (props) => {
             <Typography variant="body2" sx={{ fontSize: isMobile ? 24 : 14 }}>
               Agreed?
             </Typography>
-            <ThumbUpOffAltIcon sx={customStyles.likeIcon} />
-            <ThumbDownOffAltIcon sx={customStyles.likeIcon} />
+            <Typography variant="body2" sx={{ fontSize: isMobile ? 24 : 14 }}>
+              {upvotes}
+            </Typography>
+            <ThumbUpOffAltIcon
+              sx={customStyles.likeIcon}
+              id={id}
+              onClick={handleUpvote}
+            />
+            <Typography variant="body2" sx={{ fontSize: isMobile ? 24 : 14 }}>
+              {downvotes}
+            </Typography>
+            <ThumbDownOffAltIcon
+              sx={customStyles.likeIcon}
+              id={id}
+              onClick={handleDownvote}
+            />
           </Stack>
         </Box>
       </Stack>
-    </Box>
+    </>
   );
 };
 

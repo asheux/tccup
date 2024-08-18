@@ -4,10 +4,8 @@ import { createRoot } from "react-dom/client";
 
 import AppRoutes from "src/routes";
 import { TccupTheme } from "src/commons/Themes";
-import { isLight } from "src/helpers";
 
 import store from "src/redux/store";
-import * as sWRegistration from "src/service-worker";
 
 const renderApp = () => {
   const container = document.getElementById("root");
@@ -52,7 +50,3 @@ const renderApp = () => {
 };
 
 renderApp();
-
-// Register the service worker
-// https://github.com/botnet-dobbs/quest-list-frontend/issues/48
-sWRegistration.register();

@@ -17,7 +17,7 @@ import { StyledToolbar, ScrollTop } from "src/commons/Toolbar";
 import { isMobile } from "src/helpers";
 import { customStyles } from "src/styles";
 
-const tccup_logo = "/icons/google.svg";
+const tccup_logo = "/icons/tccup.png";
 
 const Layout = (props) => {
   const { children, toggleTheme } = props;
@@ -57,7 +57,7 @@ const Layout = (props) => {
                       fontWeight: 500,
                     }}
                   >
-                    Tccup
+                    ccup
                   </Typography>
                 </Stack>
               </Link>

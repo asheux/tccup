@@ -3,7 +3,6 @@ const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
-const WorkboxPlugin = require('workbox-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const webpack = require('webpack')
 const dotenv = require('dotenv');
@@ -19,31 +18,7 @@ module.exports = () => {
   const env = dotenv.config().parsed;
   const isDev = process.env.TCCUP_DEPLOY_ENVIRONMENT === 'development';
   const s3Assets = process.env.S3_ASSETS;
-  
-  const workboxPlugin = new WorkboxPlugin.GenerateSW({
-    clientsClaim: true,
-    skipWaiting: true,
-    maximumFileSizeToCacheInBytes: 50000000,
-    runtimeCaching: [{
-      urlPattern: new RegExp(`${PUBLIC_PATH[s3Assets]}/.*\\.(?:png|jpg|jpeg|svg|gif|webp)`),
-      handler: "CacheFirst",
-      options: {
-        cacheName: "do-images",
-        expiration: {
-          maxEntries: 50,
-          maxAgeSeconds: 30 * 24 * 60 * 60,
-        }
-      }
-    }]
-  })
-  if (isDev) {
-    Object.defineProperty(workboxPlugin, "alreadyCalled", {
-      get() {
-        return false
-      },
-      set() {}
-    })
-  }
+
   
   return {
     entry: {
@@ -92,7 +67,6 @@ module.exports = () => {
           to: path.build,
         }],
       }),
-      workboxPlugin,
       new webpack.DefinePlugin({
         'process.env.TCCUP_BASE_URL': JSON.stringify(process.env.TCCUP_BASE_URL),
         'process.env.TCCUP_DEPLOY_ENVIRONMENT': JSON.stringify(process.env.TCCUP_DEPLOY_ENVIRONMENT),
