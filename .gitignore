@@ -1,0 +1,12 @@
+node_modules/
+
+# Vim stuff
+*.sw?
+
+.DS_Store
+.yarn-error.log
+*.log
+dist/
+build/
+
+.env

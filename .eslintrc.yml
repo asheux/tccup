@@ -1,0 +1,37 @@
+env:
+  browser: true
+  es2021: true
+
+extends:
+  - eslint:recommended
+  - plugin:@typescript-eslint/recommended
+  - plugin:@typescript-eslint/eslint-recommended
+  - plugin:prettier/recommended
+
+parserOptions:
+  ecmaFeatures:
+    jsx: true
+
+  ecmaVersion: latest
+  sourceType: module
+
+plugins:
+  - react
+  - '@typescript-eslint'
+
+rules:
+  eqeqeq: off
+  curly: error
+  quotes:
+    - error
+    - double
+  react/jsx-uses-react: error
+  react/jsx-uses-vars: error
+  "@typescript-eslint/no-explicit-any": off
+
+parser: '@typescript-eslint/parser'
+
+globals:
+  process: true
+  module: true
+  require: true
