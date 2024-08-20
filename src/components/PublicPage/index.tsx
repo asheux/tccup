@@ -8,21 +8,24 @@ import {
   Stack,
   Divider,
   CircularProgress,
+  Paper,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 
 // App related imports
 import Layout from "src/components/Layout";
 import Message from "src/commons/Message";
-import { StyledButton } from "src/commons/Buttons";
+import { StyledButton, VisuallyHiddenInput } from "src/commons/Buttons";
 import {
   StyledInput,
   CustomLabel,
   ShowError,
   ControlledInput,
 } from "src/commons/Inputs";
+import { LinearProgressWithLabel } from "src/commons/Loader";
 import { customStyles } from "src/styles";
 import { useAppSelector } from "src/hooks";
+import { convertBlobObjToUrl } from "src/helpers";
 import initState from "src/redux/reducers/initState";
 
 const PublicPage = (props) => {
@@ -34,6 +37,10 @@ const PublicPage = (props) => {
   const [data, setData] = useState([]);
   const [errors, setErrors] = useState(initState.errors);
   const [errorMessages, setErrorMessages] = useState(initState.errorMessages);
+  const [uploadedImage, setUploadedImage] = useState(null);
+  const [progress, setProgress] = useState(0);
+  const [isUploading, setIsUploadinng] = useState(false);
+  const [progressMessage, setProgressMessage] = useState("Upload your image");
 
   const theme = useTheme();
   const thought = useAppSelector((state) => state.thought);
@@ -58,6 +65,7 @@ const PublicPage = (props) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    setOpenForm(false);
     saveThoughtAction(payload).then((res) => {
       if (res && res.type === "thought/failure") {
         const errs = res.payload?.error;
@@ -92,19 +100,23 @@ const PublicPage = (props) => {
 
   const handleUpvote = (e) => {
     const id = e.currentTarget.getAttribute("id");
-    const newVote = 1;
+    let newVote = 1;
     let cloneThoughts = updateUpvotes(data, newVote, id);
-    if (
-      localStorage.voted &&
-      localStorage.voted?.split(",")[0] === "downvote" &&
-      localStorage.voted?.split(",")[1] === id
-    ) {
-      cloneThoughts = updateDownvotes(cloneThoughts, -1, id);
-      saveVoteAction(id, -1, "downvote");
+    if (localStorage.voted && localStorage.voted?.split(",")[1] === id) {
+      if (localStorage.voted?.split(",")[0] === "downvote") {
+        cloneThoughts = updateDownvotes(cloneThoughts, -1, id);
+        saveVoteAction(id, -1, "downvote");
+        localStorage.setItem("voted", `upvote,${id}`);
+      } else {
+        newVote = -1;
+        cloneThoughts = updateUpvotes(data, newVote, id);
+        localStorage.removeItem("voted");
+      }
+    } else {
+      localStorage.setItem("voted", `upvote,${id}`);
     }
     setData(cloneThoughts);
     saveVoteAction(id, newVote, "upvote");
-    localStorage.setItem("voted", `upvote,${id}`);
   };
 
   const updateDownvotes = (toupdate, newVote, id) => {
@@ -122,20 +134,62 @@ const PublicPage = (props) => {
 
   const handleDownvote = (e) => {
     const id = e.currentTarget.getAttribute("id");
-    const newVote = 1;
+    let newVote = 1;
     let cloneThoughts = updateDownvotes(data, newVote, id);
-    if (
-      localStorage.voted &&
-      localStorage.voted?.split(",")[0] === "upvote" &&
-      localStorage.voted?.split(",")[1] === id
-    ) {
-      cloneThoughts = updateUpvotes(cloneThoughts, -1, id);
-      saveVoteAction(id, -1, "upvote");
+    if (localStorage.voted && localStorage.voted?.split(",")[1] === id) {
+      if (localStorage.voted?.split(",")[0] === "upvote") {
+        cloneThoughts = updateUpvotes(cloneThoughts, -1, id);
+        saveVoteAction(id, -1, "upvote");
+        localStorage.setItem("voted", `downvote,${id}`);
+      } else {
+        newVote = -1;
+        cloneThoughts = updateDownvotes(data, newVote, id);
+        localStorage.removeItem("voted");
+      }
+    } else {
+      localStorage.setItem("voted", `downvote,${id}`);
     }
     setData(cloneThoughts);
     saveVoteAction(id, newVote, "downvote");
-    localStorage.setItem("voted", `downvote,${id}`);
   };
+
+  const handleUpload = (e) => {
+    setIsUploadinng(true);
+    setCanvote(false);
+    const files = e.target.files;
+
+    const file = files[0];
+    import("compressorjs").then((module) => {
+      const Compressor = module.default;
+      new Compressor(file, {
+        quality: 0.6,
+        convertSize: 0,
+        mimeType: "image/jpeg",
+        success(result) {
+          const blobUrl = convertBlobObjToUrl(result);
+          setUploadedImage(blobUrl);
+        },
+        error(err) {
+          console.log(err.message);
+        },
+      });
+    });
+    setProgress(10);
+  };
+
+  useEffect(() => {
+    if (uploadedImage) {
+      setProgressMessage("Processing your image");
+    }
+    const timer = setInterval(() => {
+      setProgress((prevProgress) =>
+        prevProgress >= 100 ? 0 : prevProgress + 1,
+      );
+    }, 800);
+    return () => {
+      clearInterval(timer);
+    };
+  }, [uploadedImage]);
 
   return (
     <React.Fragment>
@@ -192,89 +246,124 @@ const PublicPage = (props) => {
                     </Typography>
                   </Box>
                   <Stack direction="row" spacing={2}>
-                    <StyledButton>
+                    <StyledButton
+                      component="label"
+                      role={undefined}
+                      variant="contained"
+                      tabIndex={-1}
+                    >
                       Upload a photo of your trash haul
+                      <VisuallyHiddenInput
+                        onChange={handleUpload}
+                        type="file"
+                        accept="image/*"
+                      />
                     </StyledButton>
-                    <StyledButton onClick={handleOpenForm}>
+                    <StyledButton
+                      disabled={isUploading}
+                      onClick={handleOpenForm}
+                    >
                       What should we do next?
                     </StyledButton>
                   </Stack>
-                  {openForm &&
-                    (canvote ? (
-                      <Stack spacing={2}>
-                        <Box>
-                          <Divider />
-                        </Box>
-                        <CustomLabel
-                          theme={theme}
-                          label=" You only get one input. Make it count."
-                        />
-                        <Stack>
-                          <ControlledInput
-                            id="name"
-                            placeholder="Choose a name"
-                            size="small"
-                            name="name"
-                            fullWidth
-                            required
-                            onChange={handleChange}
-                            error={errors.name}
-                            helperText={errors.name && errorMessages.name}
-                          />
-                        </Stack>
-                        <Stack spacing={2}>
-                          <StyledInput
-                            id="thoughts"
-                            placeholder="Let's get your input for a new government."
-                            name="description"
-                            fullWidth
-                            required
-                            multiline
-                            rows={10}
-                            onChange={handleChange}
-                            error={errors.description}
-                            helperText={
-                              errors.description && errorMessages.description
-                            }
-                            sx={{
-                              "& .MuiOutlinedInput-input": {
-                                fontSize: "14px",
-                              },
-                            }}
-                          />
-                        </Stack>
-                        {errors.name && (
-                          <ShowError
-                            show={errors.name}
-                            color="orange"
-                            message="Simply search your name on the list to see all the coins you gathered."
-                          />
-                        )}
-                        <StyledButton
-                          onClick={handleSubmit}
-                          disabled={errors.name || errors.description}
-                          sx={{ width: "20%" }}
+                  {isUploading && (
+                    <Paper
+                      sx={{
+                        pr: 2,
+                        pl: 2,
+                        pt: 1,
+                        pb: 1,
+                        backgroundColor: "#528393",
+                      }}
+                    >
+                      <Stack>
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            fontStyle: "italic",
+                            color: "#ffffff",
+                          }}
                         >
-                          {thought.loading ? (
-                            <CircularProgress
-                              variant="indeterminate"
-                              disableShrink
-                              sx={{ color: "#ffffff" }}
-                              size={customStyles.spinnerSize}
-                              thickness={4}
-                            />
-                          ) : (
-                            "Submit"
-                          )}
-                        </StyledButton>
+                          {progressMessage}
+                        </Typography>
+                        <LinearProgressWithLabel value={progress} />
                       </Stack>
-                    ) : (
-                      <ShowError
-                        show={!canvote && openForm}
-                        color="#d32f2f"
-                        message="Show me your trash, and I will show you your token."
+                    </Paper>
+                  )}
+                  {openForm && canvote && (
+                    <Stack spacing={2}>
+                      <Box>
+                        <Divider />
+                      </Box>
+                      <CustomLabel
+                        theme={theme}
+                        label=" You only get one input. Make it count."
                       />
-                    ))}
+                      <Stack>
+                        <ControlledInput
+                          id="name"
+                          placeholder="Choose a name"
+                          size="small"
+                          name="name"
+                          fullWidth
+                          required
+                          onChange={handleChange}
+                          error={errors.name}
+                          helperText={errors.name && errorMessages.name}
+                        />
+                      </Stack>
+                      <Stack spacing={2}>
+                        <StyledInput
+                          id="thoughts"
+                          placeholder="Let's get your input for a new government."
+                          name="description"
+                          fullWidth
+                          required
+                          multiline
+                          rows={10}
+                          onChange={handleChange}
+                          error={errors.description}
+                          helperText={
+                            errors.description && errorMessages.description
+                          }
+                          sx={{
+                            "& .MuiOutlinedInput-input": {
+                              fontSize: "14px",
+                            },
+                          }}
+                        />
+                      </Stack>
+                      {errors.name && (
+                        <ShowError
+                          show={errors.name}
+                          color="orange"
+                          message="Simply search your name on the list to see all the coins you gathered."
+                        />
+                      )}
+                      <StyledButton
+                        onClick={handleSubmit}
+                        disabled={errors.name || errors.description}
+                        sx={{ width: "20%" }}
+                      >
+                        {thought.loading ? (
+                          <CircularProgress
+                            variant="indeterminate"
+                            disableShrink
+                            sx={{ color: "#ffffff" }}
+                            size={customStyles.spinnerSize}
+                            thickness={4}
+                          />
+                        ) : (
+                          "Submit"
+                        )}
+                      </StyledButton>
+                    </Stack>
+                  )}
+                  <ShowError
+                    show={!isUploading && !canvote && openForm}
+                    color="#d32f2f"
+                    message="Use the upload button to show me your trash, then I will show you a form."
+                  />
                 </Stack>
               </Container>
             </Grid>
@@ -288,17 +377,17 @@ const PublicPage = (props) => {
               }}
             >
               <Box sx={{ mb: 4 }}>
-                {thoughts.loading ? (
+                {thoughts.loading && !data.length ? (
                   <Box sx={{ ...customStyles.centerStuff, height: "100vh" }}>
                     <CircularProgress
                       variant="indeterminate"
                       disableShrink
-                      sx={{ color: "#ffffff" }}
+                      sx={{ color: theme.palette.text.primary }}
                       size={customStyles.spinnerSize}
                       thickness={4}
                     />
                   </Box>
-                ) : !thoughts.data.length ? (
+                ) : !thoughts.data.length && !data.length ? (
                   <Box sx={{ ...customStyles.centerStuff, height: "100vh" }}>
                     <Typography
                       sx={{ fontStyle: "italic" }}

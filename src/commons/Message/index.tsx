@@ -56,7 +56,7 @@ const Message = (props) => {
                 {name}
               </Typography>
             </Box>
-            <Tooltip title="Verified">
+            <Tooltip title="Verified by uploading">
               <VerifiedUserIcon sx={customStyles.verifiedIcon} />
             </Tooltip>
             <Divider
@@ -70,14 +70,14 @@ const Message = (props) => {
                 sx={{ cursor: "pointer" }}
                 direction="row"
                 alignItems="center"
-                spacing={0.3}
+                spacing={0.5}
               >
                 <Box
                   src={grokcoin}
                   component="img"
                   sx={{
-                    height: 16,
-                    width: 16,
+                    height: 15,
+                    width: 15,
                   }}
                 />
                 <Typography

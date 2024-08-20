@@ -48,15 +48,17 @@ export const ShowError = (props) => {
   const { show, message, color } = props;
 
   return (
-    <small
-      style={{
-        color: color,
-        padding: "10px",
-        border: `.5px solid ${color}`,
-      }}
-    >
-      {show && message}
-    </small>
+    show && (
+      <small
+        style={{
+          color: color,
+          padding: "10px",
+          border: `.5px solid ${color}`,
+        }}
+      >
+        {message}
+      </small>
+    )
   );
 };
 

@@ -53,7 +53,7 @@ module.exports = () => {
       new CleanWebpackPlugin(),
       new ForkTsCheckerWebpackPlugin(),
       new HtmlWebpackPlugin({
-        title: 'QuestList',
+        title: 'On pic me',
         template: path.template,
         filename: 'index.html'
       }),

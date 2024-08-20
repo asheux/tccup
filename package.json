@@ -54,8 +54,7 @@
     "redux-batched-subscribe": "^0.1.6",
     "redux-thunk": "^3.1.0",
     "terser-webpack-plugin": "^5.3.10",
-    "webpack-dev-server": "^4.15.1",
-    "workbox-webpack-plugin": "^7.1.0"
+    "webpack-dev-server": "^4.15.1"
   },
   "devDependencies": {
     "@babel/plugin-proposal-class-properties": "^7.18.6",
