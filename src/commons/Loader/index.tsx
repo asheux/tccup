@@ -6,6 +6,7 @@ import LinearProgress, {
   LinearProgressProps,
 } from "@mui/material/LinearProgress";
 
+import { isMobile } from "src/helpers";
 import { customStyles } from "src/styles";
 
 export const Spinner = () => {
@@ -33,9 +34,10 @@ export const LinearProgressWithLabel = (
         />
       </Box>
       <Box sx={{ minWidth: 35 }}>
-        <Typography variant="body2" sx={{ color: "#ffffff" }}>{`${Math.round(
-          props.value,
-        )}%`}</Typography>
+        <Typography
+          variant="body2"
+          sx={{ color: "#ffffff", fontSize: isMobile ? 24 : 12 }}
+        >{`${Math.round(props.value)}%`}</Typography>
       </Box>
     </Box>
   );

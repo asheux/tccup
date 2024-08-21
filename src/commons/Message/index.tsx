@@ -39,8 +39,8 @@ const Message = (props) => {
             alt="User Profile"
             src={tccup_logo}
             sx={{
-              width: 35,
-              height: 35,
+              width: isMobile ? 55 : 35,
+              height: isMobile ? 55 : 35,
             }}
           />
         </Box>
@@ -50,7 +50,7 @@ const Message = (props) => {
               <Typography
                 sx={{
                   ...customStyles.boldText,
-                  fontSize: isMobile ? 24 : 14,
+                  fontSize: isMobile ? 30 : 14,
                 }}
               >
                 {name}
@@ -76,14 +76,14 @@ const Message = (props) => {
                   src={grokcoin}
                   component="img"
                   sx={{
-                    height: 15,
-                    width: 15,
+                    height: isMobile ? 27 : 15,
+                    width: isMobile ? 27 : 15,
                   }}
                 />
                 <Typography
                   sx={{
                     ...customStyles.boldText,
-                    fontSize: isMobile ? 24 : 14,
+                    fontSize: isMobile ? 30 : 14,
                   }}
                 >
                   {grokcoins}
@@ -94,7 +94,7 @@ const Message = (props) => {
           <Typography
             variant="body2"
             color="text.secondary"
-            sx={{ fontSize: isMobile ? 14 : 12 }}
+            sx={{ fontSize: isMobile ? 8 : 11 }}
           >
             Posted on {dateFormatter(postedOn)}
           </Typography>
@@ -105,10 +105,10 @@ const Message = (props) => {
             {description}
           </Typography>
           <Stack direction="row" sx={{ mt: 2 }} spacing={3} alignItems="center">
-            <Typography variant="body2" sx={{ fontSize: isMobile ? 24 : 14 }}>
+            <Typography variant="body2" sx={{ fontSize: isMobile ? 25 : 14 }}>
               Agreed?
             </Typography>
-            <Typography variant="body2" sx={{ fontSize: isMobile ? 24 : 14 }}>
+            <Typography variant="body2" sx={{ fontSize: isMobile ? 25 : 14 }}>
               {upvotes}
             </Typography>
             <ThumbUpOffAltIcon
@@ -116,7 +116,7 @@ const Message = (props) => {
               id={id}
               onClick={handleUpvote}
             />
-            <Typography variant="body2" sx={{ fontSize: isMobile ? 24 : 14 }}>
+            <Typography variant="body2" sx={{ fontSize: isMobile ? 25 : 14 }}>
               {downvotes}
             </Typography>
             <ThumbDownOffAltIcon

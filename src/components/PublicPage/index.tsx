@@ -16,21 +16,22 @@ import { useTheme } from "@mui/material/styles";
 import Layout from "src/components/Layout";
 import Message from "src/commons/Message";
 import { StyledButton, VisuallyHiddenInput } from "src/commons/Buttons";
-import {
-  StyledInput,
-  CustomLabel,
-  ShowError,
-  ControlledInput,
-} from "src/commons/Inputs";
+import { StyledInput, ShowError } from "src/commons/Inputs";
 import { LinearProgressWithLabel } from "src/commons/Loader";
 import { customStyles } from "src/styles";
 import { useAppSelector } from "src/hooks";
-import { convertBlobObjToUrl } from "src/helpers";
+import { isMobile } from "src/helpers";
 import initState from "src/redux/reducers/initState";
 
 const PublicPage = (props) => {
-  const { darkMode, saveThoughtAction, getThoughtsAction, saveVoteAction } =
-    props;
+  const {
+    darkMode,
+    saveThoughtAction,
+    getThoughtsAction,
+    saveVoteAction,
+    uploadFileAction,
+    trashDetectAction,
+  } = props;
   const [openForm, setOpenForm] = useState(false);
   const [canvote, setCanvote] = useState(false);
   const [payload, setPayload] = useState(initState.thoughtpayload);
@@ -41,12 +42,19 @@ const PublicPage = (props) => {
   const [progress, setProgress] = useState(0);
   const [isUploading, setIsUploadinng] = useState(false);
   const [progressMessage, setProgressMessage] = useState("Upload your image");
+  const [allGoodMessage, setAllgoodMessage] = useState("");
+  const [verificationError, setVerificationError] = useState(false);
+  const [verificationErrorM, setVerificationErrorM] = useState("");
+  const [showMessage, setShowMessage] = useState(false);
+  const [showOtherResponses, setShowOtherResponses] = useState(false);
 
   const theme = useTheme();
   const thought = useAppSelector((state) => state.thought);
   const thoughts = useAppSelector((state) => state.thoughts);
 
   const handleOpenForm = () => {
+    setAllgoodMessage("");
+    setIsUploadinng(false);
     setOpenForm(true);
   };
 
@@ -65,7 +73,6 @@ const PublicPage = (props) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    setOpenForm(false);
     saveThoughtAction(payload).then((res) => {
       if (res && res.type === "thought/failure") {
         const errs = res.payload?.error;
@@ -73,9 +80,11 @@ const PublicPage = (props) => {
         setErrors({ ...errors, ...parsedErrors });
         setErrorMessages({ ...errorMessages, ...errs });
       } else {
+        setCanvote(false);
         setOpenForm(false);
         getThoughtsAction();
       }
+      setUploadedImage(null);
     });
   };
 
@@ -155,273 +164,464 @@ const PublicPage = (props) => {
 
   const handleUpload = (e) => {
     setIsUploadinng(true);
-    setCanvote(false);
     const files = e.target.files;
-
     const file = files[0];
-    import("compressorjs").then((module) => {
-      const Compressor = module.default;
-      new Compressor(file, {
-        quality: 0.6,
-        convertSize: 0,
-        mimeType: "image/jpeg",
-        success(result) {
-          const blobUrl = convertBlobObjToUrl(result);
-          setUploadedImage(blobUrl);
-        },
-        error(err) {
-          console.log(err.message);
-        },
-      });
-    });
+    if (!file) {
+      setIsUploadinng(false);
+    } else {
+      setShowMessage(false);
+      setVerificationError(false);
+      setVerificationErrorM("");
+    }
+    setUploadedImage(file);
     setProgress(10);
   };
 
+  const resetStuff = () => {
+    setUploadedImage(null);
+    setProgressMessage("Selecting your image...");
+    setCanvote(false);
+    setOpenForm(false);
+    setAllgoodMessage("");
+  };
+
+  useEffect(() => {
+    if (isUploading && !canvote) {
+      const timer = setTimeout(() => {
+        setProgress((preProgress) =>
+          preProgress >= 99
+            ? canvote || verificationError
+              ? 100
+              : preProgress
+            : preProgress + 1,
+        );
+      }, 800);
+      return () => {
+        clearInterval(timer);
+      };
+    }
+  }, [progress, isUploading, canvote]);
+
   useEffect(() => {
     if (uploadedImage) {
-      setProgressMessage("Processing your image");
-    }
-    const timer = setInterval(() => {
-      setProgress((prevProgress) =>
-        prevProgress >= 100 ? 0 : prevProgress + 1,
+      uploadFileAction(setProgressMessage, setProgress, uploadedImage).then(
+        (res) => {
+          if (res.type === "upload/success") {
+            setProgressMessage(
+              "Checking for any indication of trash in the image...",
+            );
+            trashDetectAction(uploadedImage).then((tres) => {
+              if (tres.type === "trashdetect/success") {
+                setProgress(100);
+                setShowMessage(true);
+                setProgressMessage("All good. You can submit your input.");
+                setAllgoodMessage("All good. You can submit your input.");
+                setCanvote(true);
+              } else {
+                setProgress(100);
+                setShowMessage(true);
+                setVerificationError(true);
+                setVerificationErrorM(tres.payload?.error);
+              }
+            });
+            // setIsUploadinng(false);
+          } else {
+            setProgress(100);
+            setShowMessage(true);
+            setVerificationError(true);
+            setVerificationErrorM(res.payload?.error);
+          }
+          setUploadedImage(null);
+        },
       );
-    }, 800);
-    return () => {
-      clearInterval(timer);
-    };
+    }
   }, [uploadedImage]);
+
+  const positionStyle = isMobile
+    ? {}
+    : {
+        position: "fixed",
+        boxShadow: `4px 0 4px -4px ${darkMode ? "rgba(0,0,0,0.5)" : "#22303d"}`,
+      };
+
+  const handleChangeLayout = () => {
+    setShowOtherResponses(!showOtherResponses);
+  };
 
   return (
     <React.Fragment>
-      <Layout {...props}>
-        <Container maxWidth="xl" sx={{ color: theme.palette.text.primary }}>
+      <Layout
+        {...props}
+        handleChangeLayout={handleChangeLayout}
+        label={
+          showOtherResponses ? "Create your response" : "View others response"
+        }
+      >
+        <Container
+          maxWidth="xl"
+          sx={{
+            color: theme.palette.text.primary,
+            boxSizing: isMobile ? "inherit" : "border-box",
+          }}
+        >
           <Grid container spacing={2}>
-            <Grid
-              item
-              xs={8}
-              sx={{
-                boxShadow: `4px 0 4px -4px ${darkMode ? "rgba(0,0,0,0.5)" : "#22303d"}`,
-                position: "fixed",
-                width: "59.67vw",
-                height: "100vh",
-                overflow: "hidden",
-              }}
-            >
-              <Container
+            {!showOtherResponses && (
+              <Grid
+                item
+                xs={isMobile ? 12 : 8}
                 sx={{
-                  ...customStyles.centerStuff,
-                  height: "100%",
+                  ...positionStyle,
+                  width: isMobile ? "100vw" : "59.67vw",
+                  height: "100vh",
+                  overflow: "hidden",
                 }}
               >
-                <Stack spacing={2}>
-                  <Box>
-                    <Typography variant="h3">The Cosmic Clean up</Typography>
-                    <Typography
-                      sx={{ fontStyle: "italic" }}
-                      variant="body1"
-                      color="text.secondary"
-                    >
-                      Pick up trash, pick up freedom. Literally! Like recycling,
-                    </Typography>
-                    <Typography
-                      sx={{ fontStyle: "italic" }}
-                      variant="body1"
-                      color="text.secondary"
-                    >
-                      but for democracy. Every piece of trash picked up
-                    </Typography>
-                    <Typography
-                      sx={{ fontStyle: "italic" }}
-                      variant="body1"
-                      color="text.secondary"
-                    >
-                      gets you a token to say something in a
-                    </Typography>
-                    <Typography
-                      sx={{ fontStyle: "italic" }}
-                      variant="body1"
-                      color="text.secondary"
-                    >
-                      "What Should We Do Next As A Country?" referendum.
-                    </Typography>
-                  </Box>
-                  <Stack direction="row" spacing={2}>
-                    <StyledButton
-                      component="label"
-                      role={undefined}
-                      variant="contained"
-                      tabIndex={-1}
-                    >
-                      Upload a photo of your trash haul
-                      <VisuallyHiddenInput
-                        onChange={handleUpload}
-                        type="file"
-                        accept="image/*"
-                      />
-                    </StyledButton>
-                    <StyledButton
-                      disabled={isUploading}
-                      onClick={handleOpenForm}
-                    >
-                      What should we do next?
-                    </StyledButton>
-                  </Stack>
-                  {isUploading && (
-                    <Paper
-                      sx={{
-                        pr: 2,
-                        pl: 2,
-                        pt: 1,
-                        pb: 1,
-                        backgroundColor: "#528393",
-                      }}
-                    >
-                      <Stack>
-                        <Typography
-                          variant="body2"
-                          sx={{
-                            fontStyle: "italic",
-                            color: "#ffffff",
-                          }}
-                        >
-                          {progressMessage}
-                        </Typography>
-                        <LinearProgressWithLabel value={progress} />
-                      </Stack>
-                    </Paper>
-                  )}
-                  {openForm && canvote && (
-                    <Stack spacing={2}>
-                      <Box>
-                        <Divider />
-                      </Box>
-                      <CustomLabel
-                        theme={theme}
-                        label=" You only get one input. Make it count."
-                      />
-                      <Stack>
-                        <ControlledInput
-                          id="name"
-                          placeholder="Choose a name"
-                          size="small"
-                          name="name"
-                          fullWidth
-                          required
-                          onChange={handleChange}
-                          error={errors.name}
-                          helperText={errors.name && errorMessages.name}
-                        />
-                      </Stack>
-                      <Stack spacing={2}>
-                        <StyledInput
-                          id="thoughts"
-                          placeholder="Let's get your input for a new government."
-                          name="description"
-                          fullWidth
-                          required
-                          multiline
-                          rows={10}
-                          onChange={handleChange}
-                          error={errors.description}
-                          helperText={
-                            errors.description && errorMessages.description
-                          }
-                          sx={{
-                            "& .MuiOutlinedInput-input": {
-                              fontSize: "14px",
-                            },
-                          }}
-                        />
-                      </Stack>
-                      {errors.name && (
-                        <ShowError
-                          show={errors.name}
-                          color="orange"
-                          message="Simply search your name on the list to see all the coins you gathered."
-                        />
-                      )}
-                      <StyledButton
-                        onClick={handleSubmit}
-                        disabled={errors.name || errors.description}
-                        sx={{ width: "20%" }}
+                <Container
+                  sx={{
+                    ...customStyles.centerStuff,
+                    height: "100%",
+                  }}
+                >
+                  <Stack spacing={2}>
+                    <Box>
+                      <Typography sx={{ fontSize: isMobile ? 75 : 43 }}>
+                        The Cosmic Clean up
+                      </Typography>
+                      <Typography
+                        sx={{
+                          fontStyle: "italic",
+                          fontSize: isMobile ? 24 : 14,
+                        }}
+                        variant="body1"
+                        color="text.secondary"
                       >
-                        {thought.loading ? (
-                          <CircularProgress
-                            variant="indeterminate"
-                            disableShrink
-                            sx={{ color: "#ffffff" }}
-                            size={customStyles.spinnerSize}
-                            thickness={4}
-                          />
-                        ) : (
-                          "Submit"
-                        )}
+                        Pick up trash, pick up freedom. Literally! Like
+                        recycling,
+                      </Typography>
+                      <Typography
+                        sx={{
+                          fontStyle: "italic",
+                          fontSize: isMobile ? 24 : 14,
+                        }}
+                        variant="body1"
+                        color="text.secondary"
+                      >
+                        but for democracy. Every piece of trash picked up
+                      </Typography>
+                      <Typography
+                        sx={{
+                          fontStyle: "italic",
+                          fontSize: isMobile ? 24 : 14,
+                        }}
+                        variant="body1"
+                        color="text.secondary"
+                      >
+                        gets you a token to say something in a promptocracy on
+                      </Typography>
+                      <Typography
+                        sx={{
+                          fontStyle: "italic",
+                          fontSize: isMobile ? 24 : 14,
+                        }}
+                        variant="body1"
+                        color="text.secondary"
+                      >
+                        "What Should We Do Next As A Country?" referendum.
+                      </Typography>
+                    </Box>
+                    <Stack direction="row" spacing={2}>
+                      <StyledButton
+                        component="label"
+                        role={undefined}
+                        variant="contained"
+                        tabIndex={-1}
+                        disabled={canvote}
+                        onClick={resetStuff}
+                        sx={{ fontSize: isMobile ? 22 : 12 }}
+                      >
+                        Upload a photo of your trash haul
+                        <VisuallyHiddenInput
+                          onChange={handleUpload}
+                          type="file"
+                          accept="image/*"
+                        />
+                      </StyledButton>
+                      <StyledButton
+                        component="label"
+                        role={undefined}
+                        variant="contained"
+                        tabIndex={-1}
+                        disabled={!canvote && isUploading}
+                        onClick={handleOpenForm}
+                        sx={{ fontSize: isMobile ? 22 : 12 }}
+                      >
+                        What should we do next?
                       </StyledButton>
                     </Stack>
-                  )}
-                  <ShowError
-                    show={!isUploading && !canvote && openForm}
-                    color="#d32f2f"
-                    message="Use the upload button to show me your trash, then I will show you a form."
-                  />
-                </Stack>
-              </Container>
-            </Grid>
-            <Grid
-              item
-              xs={4}
-              sx={{
-                mt: 1,
-                mb: 3,
-                ml: "66.67%",
-              }}
-            >
-              <Box sx={{ mb: 4 }}>
-                {thoughts.loading && !data.length ? (
-                  <Box sx={{ ...customStyles.centerStuff, height: "100vh" }}>
-                    <CircularProgress
-                      variant="indeterminate"
-                      disableShrink
-                      sx={{ color: theme.palette.text.primary }}
-                      size={customStyles.spinnerSize}
-                      thickness={4}
+                    {isUploading && (
+                      <Paper
+                        sx={{
+                          pr: 2,
+                          pl: 2,
+                          pt: 2,
+                          pb: 2,
+                          backgroundColor: "#528393",
+                        }}
+                      >
+                        <Stack>
+                          <Typography
+                            variant="body2"
+                            sx={{
+                              fontStyle: "italic",
+                              color: "#ffffff",
+                              fontSize: isMobile ? 24 : 12,
+                            }}
+                          >
+                            {progressMessage}
+                          </Typography>
+                          <LinearProgressWithLabel value={progress} />
+                        </Stack>
+                        {showMessage && (
+                          <Box
+                            sx={{ backgroundColor: "black", height: 30, p: 1 }}
+                          >
+                            {verificationError && verificationErrorM && (
+                              <ShowError
+                                show={verificationError && verificationErrorM}
+                                color="#d32f2f"
+                                showBorder={false}
+                                message={verificationErrorM}
+                              />
+                            )}
+                            {canvote && (
+                              <ShowError
+                                show={canvote && allGoodMessage}
+                                color="green"
+                                showBorder={false}
+                                message={allGoodMessage}
+                              />
+                            )}
+                          </Box>
+                        )}
+                      </Paper>
+                    )}
+                    {openForm && canvote && (
+                      <Stack spacing={2}>
+                        <Box>
+                          <Divider />
+                          <Box sx={{ mt: 2 }}>
+                            <Typography variant={isMobile ? "h4" : "h5"}>
+                              Promptocracy
+                            </Typography>
+                            <Typography
+                              sx={{
+                                fontStyle: "italic",
+                                fontSize: isMobile ? 24 : 12,
+                              }}
+                              variant="body2"
+                              color="text.secondary"
+                            >
+                              You only get one input. Make it count.
+                            </Typography>
+                          </Box>
+                        </Box>
+                        <Stack>
+                          <StyledInput
+                            id="name"
+                            placeholder="Choose a name"
+                            name="name"
+                            fullWidth
+                            required
+                            onChange={handleChange}
+                            error={errors.name}
+                            helperText={errors.name && errorMessages.name}
+                            sx={{
+                              "& .MuiOutlinedInput-input": {
+                                fontSize: isMobile ? "24px" : "14px",
+                              },
+                            }}
+                          />
+                        </Stack>
+                        <Stack spacing={2}>
+                          <StyledInput
+                            id="thoughts"
+                            placeholder="Let's get your input for a new government."
+                            name="description"
+                            fullWidth
+                            required
+                            multiline
+                            rows={10}
+                            onChange={handleChange}
+                            error={errors.description}
+                            helperText={
+                              errors.description && errorMessages.description
+                            }
+                            sx={{
+                              "& .MuiOutlinedInput-input": {
+                                fontSize: isMobile ? "24px" : "14px",
+                              },
+                            }}
+                          />
+                        </Stack>
+                        {errors.name && (
+                          <ShowError
+                            show={errors.name}
+                            color="orange"
+                            message="Simply search your name on the list to see all the coins you gathered."
+                            showBorder={true}
+                          />
+                        )}
+                        <StyledButton
+                          onClick={handleSubmit}
+                          disabled={errors.name || errors.description}
+                          sx={{ fontSize: isMobile ? 22 : 12, width: "20%" }}
+                        >
+                          {thought.loading ? (
+                            <CircularProgress
+                              variant="indeterminate"
+                              disableShrink
+                              sx={{ color: "#ffffff" }}
+                              size={customStyles.spinnerSize}
+                              thickness={4}
+                            />
+                          ) : (
+                            "Submit"
+                          )}
+                        </StyledButton>
+                      </Stack>
+                    )}
+                    <ShowError
+                      show={!isUploading && !canvote && openForm}
+                      color="#d32f2f"
+                      message="Use the upload button to show me your trash. Then you get a prompt."
+                      showBorder={true}
                     />
+                  </Stack>
+                </Container>
+              </Grid>
+            )}
+            {isMobile ? (
+              showOtherResponses && (
+                <Grid
+                  item
+                  xs={12}
+                  sx={{
+                    mt: 10,
+                    mb: 12,
+                    ml: 3,
+                    mr: 3,
+                  }}
+                >
+                  <Box sx={{ mb: 4 }}>
+                    {thoughts.loading && !data.length ? (
+                      <Box
+                        sx={{ ...customStyles.centerStuff, height: "100vh" }}
+                      >
+                        <CircularProgress
+                          variant="indeterminate"
+                          disableShrink
+                          sx={{ color: theme.palette.text.primary }}
+                          size={customStyles.spinnerSize}
+                          thickness={4}
+                        />
+                      </Box>
+                    ) : !thoughts.data.length && !data.length ? (
+                      <Box
+                        sx={{ ...customStyles.centerStuff, height: "100vh" }}
+                      >
+                        <Typography
+                          sx={{ fontStyle: "italic" }}
+                          variant="body1"
+                          color="text.secondary"
+                        >
+                          Congratulations! You get to be the first to say
+                          something!
+                        </Typography>
+                      </Box>
+                    ) : (
+                      data.map((item) => (
+                        <Box
+                          key={item.id}
+                          className="ratings-reviews-body"
+                          sx={{
+                            color: theme.palette.text.primary,
+                          }}
+                        >
+                          <Message
+                            id={item.id}
+                            handleUpvote={handleUpvote}
+                            handleDownvote={handleDownvote}
+                            description={item.thought}
+                            name={item.name}
+                            postedOn={item.created_at}
+                            upvotes={item.upvotes}
+                            downvotes={item.downvotes}
+                            grokcoins={item.grokcoins}
+                          />
+                        </Box>
+                      ))
+                    )}
                   </Box>
-                ) : !thoughts.data.length && !data.length ? (
-                  <Box sx={{ ...customStyles.centerStuff, height: "100vh" }}>
-                    <Typography
-                      sx={{ fontStyle: "italic" }}
-                      variant="body1"
-                      color="text.secondary"
-                    >
-                      Congratulations! You get to be the first to say something!
-                    </Typography>
-                  </Box>
-                ) : (
-                  data.map((item) => (
-                    <Box
-                      key={item.id}
-                      className="ratings-reviews-body"
-                      sx={{
-                        color: theme.palette.text.primary,
-                      }}
-                    >
-                      <Message
-                        id={item.id}
-                        handleUpvote={handleUpvote}
-                        handleDownvote={handleDownvote}
-                        description={item.thought}
-                        name={item.name}
-                        postedOn={item.created_at}
-                        upvotes={item.upvotes}
-                        downvotes={item.downvotes}
-                        grokcoins={item.grokcoins}
+                </Grid>
+              )
+            ) : (
+              <Grid
+                item
+                xs={4}
+                sx={{
+                  mt: 1,
+                  mb: 3,
+                  ml: "66.67%",
+                }}
+              >
+                <Box sx={{ mb: 4 }}>
+                  {thoughts.loading && !data.length ? (
+                    <Box sx={{ ...customStyles.centerStuff, height: "100vh" }}>
+                      <CircularProgress
+                        variant="indeterminate"
+                        disableShrink
+                        sx={{ color: theme.palette.text.primary }}
+                        size={customStyles.spinnerSize}
+                        thickness={4}
                       />
                     </Box>
-                  ))
-                )}
-              </Box>
-            </Grid>
+                  ) : !thoughts.data.length && !data.length ? (
+                    <Box sx={{ ...customStyles.centerStuff, height: "100vh" }}>
+                      <Typography
+                        sx={{ fontStyle: "italic" }}
+                        variant="body1"
+                        color="text.secondary"
+                      >
+                        Congratulations! You get to be the first to say
+                        something!
+                      </Typography>
+                    </Box>
+                  ) : (
+                    data.map((item) => (
+                      <Box
+                        key={item.id}
+                        className="ratings-reviews-body"
+                        sx={{
+                          color: theme.palette.text.primary,
+                        }}
+                      >
+                        <Message
+                          id={item.id}
+                          handleUpvote={handleUpvote}
+                          handleDownvote={handleDownvote}
+                          description={item.thought}
+                          name={item.name}
+                          postedOn={item.created_at}
+                          upvotes={item.upvotes}
+                          downvotes={item.downvotes}
+                          grokcoins={item.grokcoins}
+                        />
+                      </Box>
+                    ))
+                  )}
+                </Box>
+              </Grid>
+            )}
           </Grid>
         </Container>
       </Layout>

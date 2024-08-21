@@ -4,6 +4,8 @@ import PublicPage from "src/components/PublicPage";
 import { saveThoughtAction } from "src/redux/actions/thought";
 import { getThoughtsAction } from "src/redux/actions/thoughts";
 import { saveVoteAction } from "src/redux/actions/vote";
+import { uploadFileAction } from "src/redux/actions/upload";
+import { trashDetectAction } from "src/redux/actions/trashdetect";
 
 /**
  * map state to props or updates the
@@ -15,10 +17,14 @@ const mapStateToProps = (state) => ({
   thought: state.thought,
   thoughts: state.thoughts,
   vote: state.vote,
+  upload: state.upload,
+  trashdetect: state.trashdetect,
 });
 
 export default connect(mapStateToProps, {
   saveThoughtAction,
   getThoughtsAction,
   saveVoteAction,
+  uploadFileAction,
+  trashDetectAction,
 })(PublicPage);

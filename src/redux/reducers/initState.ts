@@ -12,6 +12,8 @@ export default {
       ...context,
       data: [],
     },
+    upload: context,
+    trashdetect: context,
   },
   thoughtpayload: {
     name: "",

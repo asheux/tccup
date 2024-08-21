@@ -2,6 +2,8 @@ import React from "react";
 import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
 
+import { isMobile } from "src/helpers";
+
 const Footer = (props) => {
   const { data, theme } = props;
 
@@ -13,8 +15,8 @@ const Footer = (props) => {
         left: 0,
         right: 0,
         textAlign: "center",
-        paddingTop: 1,
-        paddingBottom: 1,
+        paddingTop: isMobile ? 2 : 1,
+        paddingBottom: isMobile ? 2 : 1,
         backgroundColor: theme.palette.primary.main,
         color: theme.palette.text.primary,
         borderRadius: 0,
@@ -23,7 +25,7 @@ const Footer = (props) => {
     >
       <Typography
         sx={{
-          fontSize: 11,
+          fontSize: isMobile ? 20 : 11,
         }}
       >
         {data}

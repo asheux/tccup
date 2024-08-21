@@ -9,7 +9,7 @@ export const StyledInput = styled(TextField)({
     color: "#A0AAB4",
   },
   "& Label.MuiFormLabel-root": {
-    fontSize: isMobile ? "20px" : "12px",
+    fontSize: isMobile ? "24px" : "12px",
     lineHeight: "1.8em",
   },
   "& .MuiInput-underline:after": {
@@ -45,7 +45,8 @@ export const CustomLabel = (props) => {
 };
 
 export const ShowError = (props) => {
-  const { show, message, color } = props;
+  const { show, message, color, showBorder } = props;
+  const border = showBorder ? { border: `.5px solid ${color}` } : {};
 
   return (
     show && (
@@ -53,7 +54,8 @@ export const ShowError = (props) => {
         style={{
           color: color,
           padding: "10px",
-          border: `.5px solid ${color}`,
+          ...border,
+          fontSize: isMobile ? "22px" : "12px",
         }}
       >
         {message}
@@ -61,12 +63,3 @@ export const ShowError = (props) => {
     )
   );
 };
-
-export const ControlledInput = styled(StyledInput)({
-  "& .MuiOutlinedInput-input": {
-    fontSize: isMobile ? "20px" : "14px",
-  },
-  "& .MuiInputBase-root": {
-    height: isMobile ? "60px" : "40px",
-  },
-});

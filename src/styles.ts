@@ -29,13 +29,13 @@ export const customStyles = {
     fontWeight: 700,
   },
   likeIcon: {
-    height: isMobile ? 24 : 16,
-    width: isMobile ? 24 : 16,
+    height: isMobile ? 30 : 16,
+    width: isMobile ? 30 : 16,
     cursor: "pointer",
   },
   verifiedIcon: {
-    height: isMobile ? 24 : 16,
-    width: isMobile ? 24 : 16,
+    height: isMobile ? 28 : 16,
+    width: isMobile ? 28 : 16,
     cursor: "pointer",
     color: "#35495E",
   },

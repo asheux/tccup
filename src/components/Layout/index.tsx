@@ -13,14 +13,14 @@ import { useTheme } from "@mui/material/styles";
 
 // App related imports
 import Footer from "src/commons/Footer";
-import { StyledToolbar, ScrollTop } from "src/commons/Toolbar";
+import { StyledToolbar, ScrollTop, ChangeLayout } from "src/commons/Toolbar";
 import { isMobile } from "src/helpers";
 import { customStyles } from "src/styles";
 
 const tccup_logo = "/icons/tccup.png";
 
 const Layout = (props) => {
-  const { children, toggleTheme } = props;
+  const { children, toggleTheme, handleChangeLayout, label } = props;
   const theme = useTheme();
 
   return (
@@ -47,13 +47,12 @@ const Layout = (props) => {
                   <img
                     className="questlist_logo"
                     src={tccup_logo}
-                    height="30px"
-                    width="30px"
+                    height={isMobile ? "60px" : "30px"}
+                    width={isMobile ? "60px" : "30px"}
                   />
                   <Typography
-                    component="h6"
                     sx={{
-                      fontSize: isMobile ? 30 : 18,
+                      fontSize: isMobile ? 35 : 18,
                       fontWeight: 500,
                     }}
                   >
@@ -63,7 +62,10 @@ const Layout = (props) => {
               </Link>
             </Box>
             <Box sx={{ flexGrow: 0, mr: 2, cursor: "pointer" }}>
-              <LightModeIcon onClick={toggleTheme} />
+              <LightModeIcon
+                onClick={toggleTheme}
+                sx={{ width: isMobile ? 60 : 25, height: isMobile ? 60 : 25 }}
+              />
             </Box>
           </StyledToolbar>
         </Container>
@@ -74,18 +76,26 @@ const Layout = (props) => {
         data={`@ ${new Date().getFullYear()}, Tccup: The Cosmic Clean Up.`}
         theme={theme}
       />
+      <ChangeLayout handleClick={handleChangeLayout} label={label} />
       <ScrollTop {...props}>
         <Fab
-          size="small"
+          size={isMobile ? "large" : "small"}
           aria-label="scroll back to top"
           sx={{
             backgroundColor: "#10161d",
             "&:hover": {
               backgroundColor: "#22303d",
             },
+            mb: isMobile ? 4 : 0,
           }}
         >
-          <KeyboardArrowUpIcon sx={{ color: "#ffffff" }} />
+          <KeyboardArrowUpIcon
+            sx={{
+              color: "#ffffff",
+              width: isMobile ? 40 : 25,
+              height: isMobile ? 40 : 25,
+            }}
+          />
         </Fab>
       </ScrollTop>
     </React.Fragment>
