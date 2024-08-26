@@ -17,7 +17,6 @@ const PUBLIC_PATH = {
 module.exports = () => {
   const env = dotenv.config().parsed;
   const isDev = process.env.TCCUP_DEPLOY_ENVIRONMENT === 'development';
-  const s3Assets = process.env.S3_ASSETS;
 
   
   return {
@@ -72,7 +71,6 @@ module.exports = () => {
         'process.env.TCCUP_DEPLOY_ENVIRONMENT': JSON.stringify(process.env.TCCUP_DEPLOY_ENVIRONMENT),
         'process.env.GOOGLE_MAP_API_KEY': JSON.stringify(process.env.GOOGLE_MAP_API_KEY),
         'process.env.PUBLIC_URL': JSON.stringify(process.env.PUBLIC_URL),
-        'process.env.S3_ASSETS': JSON.stringify(process.env.S3_ASSETS),
       })
     ],
     module: {
