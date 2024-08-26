@@ -114,7 +114,7 @@ const PublicPage = (props) => {
     if (localStorage.voted && localStorage.voted?.split(",")[1] === id) {
       if (localStorage.voted?.split(",")[0] === "downvote") {
         cloneThoughts = updateDownvotes(cloneThoughts, -1, id);
-        saveVoteAction(id, -1, "downvote");
+        saveVoteAction(id, { vote: -1 }, "downvote");
         localStorage.setItem("voted", `upvote,${id}`);
       } else {
         newVote = -1;
@@ -125,7 +125,7 @@ const PublicPage = (props) => {
       localStorage.setItem("voted", `upvote,${id}`);
     }
     setData(cloneThoughts);
-    saveVoteAction(id, newVote, "upvote");
+    saveVoteAction(id, { vote: newVote }, "upvote");
   };
 
   const updateDownvotes = (toupdate, newVote, id) => {
@@ -148,7 +148,7 @@ const PublicPage = (props) => {
     if (localStorage.voted && localStorage.voted?.split(",")[1] === id) {
       if (localStorage.voted?.split(",")[0] === "upvote") {
         cloneThoughts = updateUpvotes(cloneThoughts, -1, id);
-        saveVoteAction(id, -1, "upvote");
+        saveVoteAction(id, { vote: -1 }, "upvote");
         localStorage.setItem("voted", `downvote,${id}`);
       } else {
         newVote = -1;
@@ -159,7 +159,7 @@ const PublicPage = (props) => {
       localStorage.setItem("voted", `downvote,${id}`);
     }
     setData(cloneThoughts);
-    saveVoteAction(id, newVote, "downvote");
+    saveVoteAction(id, { vote: newVote }, "downvote");
   };
 
   const handleUpload = (e) => {
