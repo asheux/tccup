@@ -16,7 +16,7 @@ import { useTheme } from "@mui/material/styles";
 import Layout from "src/components/Layout";
 import Message from "src/commons/Message";
 import { StyledButton, VisuallyHiddenInput } from "src/commons/Buttons";
-import { StyledInput, ShowError } from "src/commons/Inputs";
+import { StyledInput, ShowError, SearchResponse } from "src/commons/Inputs";
 import { LinearProgressWithLabel } from "src/commons/Loader";
 import { customStyles } from "src/styles";
 import { useAppSelector } from "src/hooks";
@@ -47,6 +47,9 @@ const PublicPage = (props) => {
   const [verificationErrorM, setVerificationErrorM] = useState("");
   const [showMessage, setShowMessage] = useState(false);
   const [showOtherResponses, setShowOtherResponses] = useState(false);
+  const [showSecretMessage, setShowSecretMessage] = useState(false);
+  const [secret, setSecret] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
 
   const theme = useTheme();
   const thought = useAppSelector((state) => state.thought);
@@ -237,10 +240,17 @@ const PublicPage = (props) => {
     }
   }, [uploadedImage]);
 
+  useEffect(() => {
+    if (showSecretMessage) {
+      setTimeout(() => {
+        setShowSecretMessage(!showSecretMessage);
+      }, 30000);
+    }
+  }, [showSecretMessage]);
+
   const positionStyle = isMobile
     ? {}
     : {
-        position: "fixed",
         boxShadow: `4px 0 4px -4px ${darkMode ? "rgba(0,0,0,0.5)" : "#22303d"}`,
       };
 
@@ -248,35 +258,33 @@ const PublicPage = (props) => {
     setShowOtherResponses(!showOtherResponses);
   };
 
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+  };
+
   return (
     <React.Fragment>
       <Layout
         {...props}
         handleChangeLayout={handleChangeLayout}
+        showSecretMessage={showSecretMessage}
+        setShowSecretMessage={setShowSecretMessage}
+        secret={secret}
         label={
-          showOtherResponses ? "Create your response" : "View others response"
+          showOtherResponses ? "Create your response" : "View other's responses"
         }
       >
         <Container
           maxWidth="xl"
           sx={{
             color: theme.palette.text.primary,
-            boxSizing: isMobile ? "inherit" : "border-box",
+            boxSizing: isMobile ? "inherit" : "inherit",
           }}
         >
-          <Grid container spacing={2}>
+          <Grid container spacing={2} sx={{ height: "100vh" }}>
             {!showOtherResponses && (
-              <Grid
-                item
-                xs={isMobile ? 12 : 8}
-                sx={{
-                  ...positionStyle,
-                  width: isMobile ? "100vw" : "59.67vw",
-                  height: "100vh",
-                  overflow: "hidden",
-                }}
-              >
-                <Container
+              <Grid item xs={isMobile ? 12 : 8} sx={positionStyle}>
+                <Box
                   sx={{
                     ...customStyles.centerStuff,
                     height: "100%",
@@ -284,13 +292,13 @@ const PublicPage = (props) => {
                 >
                   <Stack spacing={2}>
                     <Box>
-                      <Typography sx={{ fontSize: isMobile ? 75 : 43 }}>
-                        The Cosmic Clean up
+                      <Typography sx={{ fontSize: isMobile ? 80 : 43 }}>
+                        The Kosmic Clean up
                       </Typography>
                       <Typography
                         sx={{
                           fontStyle: "italic",
-                          fontSize: isMobile ? 24 : 14,
+                          fontSize: isMobile ? 27 : 14,
                         }}
                         variant="body1"
                         color="text.secondary"
@@ -301,7 +309,7 @@ const PublicPage = (props) => {
                       <Typography
                         sx={{
                           fontStyle: "italic",
-                          fontSize: isMobile ? 24 : 14,
+                          fontSize: isMobile ? 27 : 14,
                         }}
                         variant="body1"
                         color="text.secondary"
@@ -311,7 +319,7 @@ const PublicPage = (props) => {
                       <Typography
                         sx={{
                           fontStyle: "italic",
-                          fontSize: isMobile ? 24 : 14,
+                          fontSize: isMobile ? 27 : 14,
                         }}
                         variant="body1"
                         color="text.secondary"
@@ -321,7 +329,7 @@ const PublicPage = (props) => {
                       <Typography
                         sx={{
                           fontStyle: "italic",
-                          fontSize: isMobile ? 24 : 14,
+                          fontSize: isMobile ? 27 : 14,
                         }}
                         variant="body1"
                         color="text.secondary"
@@ -337,7 +345,7 @@ const PublicPage = (props) => {
                         tabIndex={-1}
                         disabled={canvote}
                         onClick={resetStuff}
-                        sx={{ fontSize: isMobile ? 22 : 12 }}
+                        sx={{ fontSize: isMobile ? 24 : 12 }}
                       >
                         Upload a photo of your trash haul
                         <VisuallyHiddenInput
@@ -353,7 +361,7 @@ const PublicPage = (props) => {
                         tabIndex={-1}
                         disabled={!canvote && isUploading}
                         onClick={handleOpenForm}
-                        sx={{ fontSize: isMobile ? 22 : 12 }}
+                        sx={{ fontSize: isMobile ? 24 : 12 }}
                       >
                         What should we do next?
                       </StyledButton>
@@ -497,7 +505,7 @@ const PublicPage = (props) => {
                       showBorder={true}
                     />
                   </Stack>
-                </Container>
+                </Box>
               </Grid>
             )}
             {isMobile ? (
@@ -505,18 +513,28 @@ const PublicPage = (props) => {
                 <Grid
                   item
                   xs={12}
-                  sx={{
-                    mt: 10,
-                    mb: 12,
-                    ml: 3,
-                    mr: 3,
-                  }}
+                  sx={
+                    (thoughts.loading && !data.length) ||
+                    (!thoughts.data.length && !data.length)
+                      ? {
+                          height: "100vh",
+                          ...customStyles.centerStuff,
+                        }
+                      : customStyles.scrollableBox
+                  }
                 >
-                  <Box sx={{ mb: 4 }}>
+                  <Box
+                    sx={{
+                      pb: 10,
+                      pt: 15,
+                    }}
+                  >
+                    <SearchResponse
+                      handleSearchChange={handleSearchChange}
+                      searchTerm={searchTerm}
+                    />
                     {thoughts.loading && !data.length ? (
-                      <Box
-                        sx={{ ...customStyles.centerStuff, height: "100vh" }}
-                      >
+                      <Box>
                         <CircularProgress
                           variant="indeterminate"
                           disableShrink
@@ -526,11 +544,12 @@ const PublicPage = (props) => {
                         />
                       </Box>
                     ) : !thoughts.data.length && !data.length ? (
-                      <Box
-                        sx={{ ...customStyles.centerStuff, height: "100vh" }}
-                      >
+                      <Box>
                         <Typography
-                          sx={{ fontStyle: "italic" }}
+                          sx={{
+                            fontStyle: "italic",
+                            fontSize: isMobile ? 30 : 14,
+                          }}
                           variant="body1"
                           color="text.secondary"
                         >
@@ -568,15 +587,31 @@ const PublicPage = (props) => {
               <Grid
                 item
                 xs={4}
-                sx={{
-                  mt: 1,
-                  mb: 3,
-                  ml: "66.67%",
-                }}
+                sx={
+                  (thoughts.loading && !data.length) ||
+                  (!thoughts.data.length && !data.length)
+                    ? {
+                        ...customStyles.centerStuff,
+                        ...positionStyle,
+                      }
+                    : {
+                        ...customStyles.scrollableBox,
+                        ...positionStyle,
+                      }
+                }
               >
-                <Box sx={{ mb: 4 }}>
+                <Box
+                  sx={{
+                    pb: 4,
+                    pt: 8,
+                  }}
+                >
+                  <SearchResponse
+                    handleSearchChange={handleSearchChange}
+                    searchTerm={searchTerm}
+                  />
                   {thoughts.loading && !data.length ? (
-                    <Box sx={{ ...customStyles.centerStuff, height: "100vh" }}>
+                    <Box>
                       <CircularProgress
                         variant="indeterminate"
                         disableShrink
@@ -586,9 +621,12 @@ const PublicPage = (props) => {
                       />
                     </Box>
                   ) : !thoughts.data.length && !data.length ? (
-                    <Box sx={{ ...customStyles.centerStuff, height: "100vh" }}>
+                    <Box>
                       <Typography
-                        sx={{ fontStyle: "italic" }}
+                        sx={{
+                          fontStyle: "italic",
+                          fontSize: isMobile ? 30 : 14,
+                        }}
                         variant="body1"
                         color="text.secondary"
                       >

@@ -8,12 +8,6 @@ const webpack = require('webpack')
 const dotenv = require('dotenv');
 const path = require('./paths')
 
-const PUBLIC_PATH = {
-  dev: 'https://questlist-dev.blr1.digitaloceanspaces.com',
-  staging: 'https://questlist-staging.blr1.digitaloceanspaces.com',
-  prod: 'https://questlist-prod.blr1.digitaloceanspaces.com'
-};
-
 module.exports = () => {
   const env = dotenv.config().parsed;
   const isDev = process.env.TCCUP_DEPLOY_ENVIRONMENT === 'development';
@@ -68,9 +62,7 @@ module.exports = () => {
       }),
       new webpack.DefinePlugin({
         'process.env.TCCUP_BASE_URL': JSON.stringify(process.env.TCCUP_BASE_URL),
-        'process.env.TCCUP_DEPLOY_ENVIRONMENT': JSON.stringify(process.env.TCCUP_DEPLOY_ENVIRONMENT),
-        'process.env.GOOGLE_MAP_API_KEY': JSON.stringify(process.env.GOOGLE_MAP_API_KEY),
-        'process.env.PUBLIC_URL': JSON.stringify(process.env.PUBLIC_URL),
+        'process.env.TCCUP_DEPLOY_ENVIRONMENT': JSON.stringify(process.env.TCCUP_DEPLOY_ENVIRONMENT)
       })
     ],
     module: {

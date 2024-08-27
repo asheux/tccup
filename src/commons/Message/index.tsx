@@ -33,14 +33,14 @@ const Message = (props) => {
 
   return (
     <>
-      <Stack spacing={2} direction="row" sx={{ p: 2 }}>
+      <Stack spacing={2} direction="row" sx={{ p: isMobile ? 4 : 2 }}>
         <Box>
           <Avatar
             alt="User Profile"
             src={tccup_logo}
             sx={{
-              width: isMobile ? 55 : 35,
-              height: isMobile ? 55 : 35,
+              width: isMobile ? 65 : 35,
+              height: isMobile ? 65 : 35,
             }}
           />
         </Box>
@@ -50,7 +50,8 @@ const Message = (props) => {
               <Typography
                 sx={{
                   ...customStyles.boldText,
-                  fontSize: isMobile ? 30 : 14,
+                  fontSize: isMobile ? 35 : 14,
+                  textTransform: "capitalize",
                 }}
               >
                 {name}
@@ -76,14 +77,14 @@ const Message = (props) => {
                   src={grokcoin}
                   component="img"
                   sx={{
-                    height: isMobile ? 27 : 15,
-                    width: isMobile ? 27 : 15,
+                    height: isMobile ? 30 : 15,
+                    width: isMobile ? 30 : 15,
                   }}
                 />
                 <Typography
                   sx={{
                     ...customStyles.boldText,
-                    fontSize: isMobile ? 30 : 14,
+                    fontSize: isMobile ? 35 : 14,
                   }}
                 >
                   {grokcoins}
@@ -94,21 +95,21 @@ const Message = (props) => {
           <Typography
             variant="body2"
             color="text.secondary"
-            sx={{ fontSize: isMobile ? 8 : 11 }}
+            sx={{ fontSize: isMobile ? 12 : 11 }}
           >
             Posted on {dateFormatter(postedOn)}
           </Typography>
           <Typography
             variant="body2"
-            sx={{ fontSize: isMobile ? 18 : 16, mt: 1 }}
+            sx={{ fontSize: isMobile ? 20 : 16, mt: 1 }}
           >
             {description}
           </Typography>
           <Stack direction="row" sx={{ mt: 2 }} spacing={3} alignItems="center">
-            <Typography variant="body2" sx={{ fontSize: isMobile ? 25 : 14 }}>
+            <Typography variant="body2" sx={{ fontSize: isMobile ? 33 : 14 }}>
               Agreed?
             </Typography>
-            <Typography variant="body2" sx={{ fontSize: isMobile ? 25 : 14 }}>
+            <Typography variant="body2" sx={{ fontSize: isMobile ? 33 : 14 }}>
               {upvotes}
             </Typography>
             <ThumbUpOffAltIcon
@@ -116,7 +117,7 @@ const Message = (props) => {
               id={id}
               onClick={handleUpvote}
             />
-            <Typography variant="body2" sx={{ fontSize: isMobile ? 25 : 14 }}>
+            <Typography variant="body2" sx={{ fontSize: isMobile ? 33 : 14 }}>
               {downvotes}
             </Typography>
             <ThumbDownOffAltIcon
