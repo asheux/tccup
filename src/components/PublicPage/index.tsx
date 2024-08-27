@@ -251,7 +251,7 @@ const PublicPage = (props) => {
   const positionStyle = isMobile
     ? {}
     : {
-        boxShadow: `4px 0 4px -4px ${darkMode ? "rgba(0,0,0,0.5)" : "#22303d"}`,
+        boxShadow: `4px 0 4px -4px ${darkMode ? "#22303d" : "rgba(0,0,0,0.2)"}`,
       };
 
   const handleChangeLayout = () => {
@@ -529,10 +529,6 @@ const PublicPage = (props) => {
                       pt: 15,
                     }}
                   >
-                    <SearchResponse
-                      handleSearchChange={handleSearchChange}
-                      searchTerm={searchTerm}
-                    />
                     {thoughts.loading && !data.length ? (
                       <Box>
                         <CircularProgress
@@ -558,27 +554,33 @@ const PublicPage = (props) => {
                         </Typography>
                       </Box>
                     ) : (
-                      data.map((item) => (
-                        <Box
-                          key={item.id}
-                          className="ratings-reviews-body"
-                          sx={{
-                            color: theme.palette.text.primary,
-                          }}
-                        >
-                          <Message
-                            id={item.id}
-                            handleUpvote={handleUpvote}
-                            handleDownvote={handleDownvote}
-                            description={item.thought}
-                            name={item.name}
-                            postedOn={item.created_at}
-                            upvotes={item.upvotes}
-                            downvotes={item.downvotes}
-                            grokcoins={item.grokcoins}
-                          />
-                        </Box>
-                      ))
+                      <>
+                        <SearchResponse
+                          handleSearchChange={handleSearchChange}
+                          searchTerm={searchTerm}
+                        />
+                        {data.map((item) => (
+                          <Box
+                            key={item.id}
+                            className="ratings-reviews-body"
+                            sx={{
+                              color: theme.palette.text.primary,
+                            }}
+                          >
+                            <Message
+                              id={item.id}
+                              handleUpvote={handleUpvote}
+                              handleDownvote={handleDownvote}
+                              description={item.thought}
+                              name={item.name}
+                              postedOn={item.created_at}
+                              upvotes={item.upvotes}
+                              downvotes={item.downvotes}
+                              grokcoins={item.grokcoins}
+                            />
+                          </Box>
+                        ))}
+                      </>
                     )}
                   </Box>
                 </Grid>
@@ -606,10 +608,6 @@ const PublicPage = (props) => {
                     pt: 8,
                   }}
                 >
-                  <SearchResponse
-                    handleSearchChange={handleSearchChange}
-                    searchTerm={searchTerm}
-                  />
                   {thoughts.loading && !data.length ? (
                     <Box>
                       <CircularProgress
@@ -635,27 +633,33 @@ const PublicPage = (props) => {
                       </Typography>
                     </Box>
                   ) : (
-                    data.map((item) => (
-                      <Box
-                        key={item.id}
-                        className="ratings-reviews-body"
-                        sx={{
-                          color: theme.palette.text.primary,
-                        }}
-                      >
-                        <Message
-                          id={item.id}
-                          handleUpvote={handleUpvote}
-                          handleDownvote={handleDownvote}
-                          description={item.thought}
-                          name={item.name}
-                          postedOn={item.created_at}
-                          upvotes={item.upvotes}
-                          downvotes={item.downvotes}
-                          grokcoins={item.grokcoins}
-                        />
-                      </Box>
-                    ))
+                    <>
+                      <SearchResponse
+                        handleSearchChange={handleSearchChange}
+                        searchTerm={searchTerm}
+                      />
+                      {data.map((item) => (
+                        <Box
+                          key={item.id}
+                          className="ratings-reviews-body"
+                          sx={{
+                            color: theme.palette.text.primary,
+                          }}
+                        >
+                          <Message
+                            id={item.id}
+                            handleUpvote={handleUpvote}
+                            handleDownvote={handleDownvote}
+                            description={item.thought}
+                            name={item.name}
+                            postedOn={item.created_at}
+                            upvotes={item.upvotes}
+                            downvotes={item.downvotes}
+                            grokcoins={item.grokcoins}
+                          />
+                        </Box>
+                      ))}
+                    </>
                   )}
                 </Box>
               </Grid>

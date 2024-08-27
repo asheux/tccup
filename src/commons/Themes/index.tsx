@@ -140,7 +140,7 @@ const lightTheme = createTheme({
 
 export const TccupTheme = (props) => {
   const { children, darkMode } = props;
-  const theme = darkMode ? lightTheme : darkTheme;
+  const theme = darkMode ? darkTheme : lightTheme;
 
   return <ThemeProvider theme={theme}>{children}</ThemeProvider>;
 };

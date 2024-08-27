@@ -18,14 +18,14 @@ const renderApp = () => {
     const [themeColor, setThemeColor] = React.useState(
       localStorage.themeColor != "undefined"
         ? localStorage.themeColor
-        : "#000000",
+        : "#ffffff",
     );
 
     const toggleTheme = () => {
       const newMode = !darkMode;
       setDarkMode(newMode);
       localStorage.setItem("darkTheme", String(newMode));
-      const color = newMode ? "#ffffff" : "#000000";
+      const color = newMode ? "#000000" : "#ffffff";
       localStorage.setItem("themeColor", color);
       setThemeColor(color);
     };

@@ -72,7 +72,7 @@ export const customStyles = {
     top: isMobile ? 100 : 50,
     mr: 2,
     zIndex: 1,
-    borderBottom: `1px solid ${isMobile ? "rgba(0,0,0,0.5)" : "rgba(0,0,0,0.3)"}`,
+    borderBottom: `1px solid ${isMobile ? "rgba(0,0,0,0.5)" : "rgba(0,0,0,0.2)"}`,
   },
   responseSearchToolbar: {
     height: isMobile ? 100 : 40,
