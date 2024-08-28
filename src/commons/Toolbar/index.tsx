@@ -1,10 +1,11 @@
 import React from "react";
-import { Box, Fade, Toolbar, Fab, Typography } from "@mui/material";
+import { Box, Fade, Toolbar, Typography } from "@mui/material";
 import useScrollTrigger from "@mui/material/useScrollTrigger";
 import { styled } from "@mui/material/styles";
 
 import { isMobile } from "src/helpers";
 import { customStyles } from "src/styles";
+import { StyledButton } from "src/commons/Buttons";
 
 interface Props {
   children: React.ReactElement;
@@ -22,79 +23,9 @@ export const ChangeLayout = (props) => {
 
   return (
     isMobile && (
-      <Box
-        onClick={handleClick}
-        role="presentation"
-        sx={{
-          position: "fixed",
-          bottom: 40,
-          right: 30,
-        }}
-      >
-        <Fab
-          size="large"
-          aria-label="change-layout"
-          variant="extended"
-          sx={{
-            backgroundColor: "#10161d",
-            "&:hover": {
-              backgroundColor: "#22303d",
-            },
-            color: "#ffffff",
-            mb: isMobile ? 6 : 0,
-            fontSize: isMobile ? 20 : 11,
-          }}
-        >
-          {label}
-        </Fab>
-      </Box>
-    )
-  );
-};
-
-export const SecretMessage = (props) => {
-  const { handleClick, label, showSecretMessage, secret } = props;
-  return (
-    <Box
-      onClick={handleClick}
-      role="presentation"
-      sx={{
-        position: "fixed",
-        bottom: 40,
-        left: 30,
-      }}
-    >
-      {showSecretMessage && (
-        <Box
-          sx={{
-            width: isMobile ? "350px" : "310px",
-            p: 2,
-            borderRadius: 5,
-            mb: 2,
-            ml: 0.5,
-            ...customStyles.messagePopover,
-          }}
-        >
-          <Typography
-            variant="h6"
-            sx={{ pb: 0.5, fontSize: isMobile ? 30 : 16 }}
-          >
-            Secret Message
-          </Typography>
-          <Typography
-            variant="body2"
-            sx={{ fontStyle: "italic", fontSize: isMobile ? 24 : 12 }}
-          >
-            {secret
-              ? "The expected behaviour for a system with null rule, of course, is that it immediately dies out for a program like a cellular automata. But since we are going to use a different program; Turing machine, the expected behaviour is for this machine to run forever or up to a finite number that you have set the program to run without changing any state. So if we run the above machine again for some steps, the following should be expected."
-              : "You have not unlocked a secret. Play to unlock."}
-          </Typography>
-        </Box>
-      )}
-      <Fab
+      <StyledButton
         size="large"
-        aria-label="change-layout"
-        variant="extended"
+        onClick={handleClick}
         sx={{
           backgroundColor: "#10161d",
           "&:hover": {
@@ -102,11 +33,70 @@ export const SecretMessage = (props) => {
           },
           color: "#ffffff",
           mb: isMobile ? 6 : 0,
+          fontSize: isMobile ? 35 : 11,
+          position: "fixed",
+          bottom: 40,
+          right: 30,
+          borderRadius: 5,
         }}
       >
         {label}
-      </Fab>
-    </Box>
+      </StyledButton>
+    )
+  );
+};
+
+export const SecretMessage = (props) => {
+  const { handleClick, label, showSecretMessage, secret } = props;
+  return (
+    <>
+      {showSecretMessage && (
+        <Box
+          sx={{
+            width: isMobile ? "700px" : "310px",
+            p: 2,
+            borderRadius: 5,
+            mb: isMobile ? 16 : 14,
+            ml: 1,
+            ...customStyles.messagePopover,
+            position: "fixed",
+            bottom: isMobile ? 60 : 0,
+            left: isMobile ? 50 : 40,
+          }}
+        >
+          <Typography
+            variant="h6"
+            sx={{ pb: 0.5, fontSize: isMobile ? 50 : 20 }}
+          >
+            Secret Message
+          </Typography>
+          <Typography variant="body2" sx={{ fontSize: isMobile ? 35 : 14 }}>
+            {secret
+              ? "The expected behaviour for a system with null rule, of course, is that it immediately dies out for a program like a cellular automata. But since we are going to use a different program; Turing machine, the expected behaviour is for this machine to run forever or up to a finite number that you have set the program to run without changing any state. So if we run the above machine again for some steps, the following should be expected."
+              : "You have not unlocked a secret. Play to unlock."}
+          </Typography>
+        </Box>
+      )}
+      <Box
+        onClick={handleClick}
+        sx={{
+          backgroundColor: "#10161d",
+          "&:hover": {
+            backgroundColor: "#22303d",
+          },
+          color: "#ffffff",
+          mb: isMobile ? 6 : 0,
+          fontSize: isMobile ? 35 : 16,
+          position: "fixed",
+          bottom: isMobile ? 30 : 40,
+          p: 3,
+          left: 30,
+          borderRadius: "100%",
+        }}
+      >
+        {label}
+      </Box>
+    </>
   );
 };
 

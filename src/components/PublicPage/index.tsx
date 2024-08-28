@@ -292,13 +292,13 @@ const PublicPage = (props) => {
                 >
                   <Stack spacing={2}>
                     <Box>
-                      <Typography sx={{ fontSize: isMobile ? 80 : 43 }}>
+                      <Typography sx={{ fontSize: isMobile ? 85 : 47 }}>
                         The Kosmic Clean up
                       </Typography>
                       <Typography
                         sx={{
                           fontStyle: "italic",
-                          fontSize: isMobile ? 27 : 14,
+                          fontSize: isMobile ? 28 : 16,
                         }}
                         variant="body1"
                         color="text.secondary"
@@ -309,7 +309,7 @@ const PublicPage = (props) => {
                       <Typography
                         sx={{
                           fontStyle: "italic",
-                          fontSize: isMobile ? 27 : 14,
+                          fontSize: isMobile ? 28 : 16,
                         }}
                         variant="body1"
                         color="text.secondary"
@@ -319,7 +319,7 @@ const PublicPage = (props) => {
                       <Typography
                         sx={{
                           fontStyle: "italic",
-                          fontSize: isMobile ? 27 : 14,
+                          fontSize: isMobile ? 28 : 16,
                         }}
                         variant="body1"
                         color="text.secondary"
@@ -329,7 +329,7 @@ const PublicPage = (props) => {
                       <Typography
                         sx={{
                           fontStyle: "italic",
-                          fontSize: isMobile ? 27 : 14,
+                          fontSize: isMobile ? 28 : 16,
                         }}
                         variant="body1"
                         color="text.secondary"
@@ -345,7 +345,7 @@ const PublicPage = (props) => {
                         tabIndex={-1}
                         disabled={canvote}
                         onClick={resetStuff}
-                        sx={{ fontSize: isMobile ? 24 : 12 }}
+                        sx={{ fontSize: isMobile ? 28 : 14 }}
                       >
                         Upload a photo of your trash haul
                         <VisuallyHiddenInput
@@ -361,7 +361,7 @@ const PublicPage = (props) => {
                         tabIndex={-1}
                         disabled={!canvote && isUploading}
                         onClick={handleOpenForm}
-                        sx={{ fontSize: isMobile ? 24 : 12 }}
+                        sx={{ fontSize: isMobile ? 28 : 14 }}
                       >
                         What should we do next?
                       </StyledButton>
@@ -382,7 +382,7 @@ const PublicPage = (props) => {
                             sx={{
                               fontStyle: "italic",
                               color: "#ffffff",
-                              fontSize: isMobile ? 24 : 12,
+                              fontSize: isMobile ? 27 : 12,
                             }}
                           >
                             {progressMessage}

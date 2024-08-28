@@ -36,7 +36,7 @@ export const LinearProgressWithLabel = (
       <Box sx={{ minWidth: 35 }}>
         <Typography
           variant="body2"
-          sx={{ color: "#ffffff", fontSize: isMobile ? 24 : 12 }}
+          sx={{ color: "#ffffff", fontSize: isMobile ? 27 : 12 }}
         >{`${Math.round(props.value)}%`}</Typography>
       </Box>
     </Box>

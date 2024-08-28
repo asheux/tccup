@@ -48,7 +48,7 @@ const Layout = (props) => {
         }}
       >
         <Container maxWidth="xl">
-          <StyledToolbar disableGutters sx={isMobile ? { height: 100 } : {}}>
+          <StyledToolbar disableGutters sx={isMobile ? { height: 150 } : {}}>
             <Box component="div" sx={customStyles.tccupName}>
               <Link
                 to="/"
@@ -61,16 +61,16 @@ const Layout = (props) => {
                   <img
                     className="questlist_logo"
                     src={tccup_logo}
-                    height={isMobile ? "70px" : "30px"}
-                    width={isMobile ? "70px" : "30px"}
+                    height={isMobile ? "80px" : "30px"}
+                    width={isMobile ? "80px" : "30px"}
                   />
                   <Typography
                     sx={{
-                      fontSize: isMobile ? 40 : 18,
+                      fontSize: isMobile ? 45 : 18,
                       fontWeight: 500,
                     }}
                   >
-                    ccup
+                    Kcup
                   </Typography>
                 </Stack>
               </Link>
@@ -78,7 +78,7 @@ const Layout = (props) => {
             <Box sx={{ flexGrow: 0, mr: 2, cursor: "pointer" }}>
               <LightModeIcon
                 onClick={toggleTheme}
-                sx={{ width: isMobile ? 60 : 25, height: isMobile ? 60 : 25 }}
+                sx={{ width: isMobile ? 80 : 25, height: isMobile ? 80 : 25 }}
               />
             </Box>
           </StyledToolbar>
@@ -94,7 +94,7 @@ const Layout = (props) => {
         handleClick={handleViewSecret}
         showSecretMessage={showSecretMessage}
         secret={secret}
-        label={<Typography sx={{ fontSize: isMobile ? 30 : 16 }}>S</Typography>}
+        label="SM"
       />
     </React.Fragment>
   );

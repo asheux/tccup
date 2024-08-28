@@ -69,7 +69,7 @@ export const ShowError = (props) => {
           color: color,
           padding: "10px",
           ...border,
-          fontSize: isMobile ? "22px" : "12px",
+          fontSize: isMobile ? "27px" : "12px",
         }}
       >
         {message}
