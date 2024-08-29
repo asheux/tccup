@@ -368,10 +368,10 @@ const PublicPage = (props) => {
                     height: "100%",
                   }}
                 >
-                  <Stack spacing={2}>
+                  <Stack spacing={2} sx={{ p: 2, width: isMobile ? 850 : 500 }}>
                     {!openForm && (
-                      <>
-                        <Box>
+                      <Box>
+                        <Box sx={{ mb: 2 }}>
                           <Typography sx={{ fontSize: isMobile ? 85 : 47 }}>
                             The Kosmic Clean up
                           </Typography>
@@ -383,73 +383,28 @@ const PublicPage = (props) => {
                             variant="body1"
                             color="text.secondary"
                           >
-                            Pick up trash, pick up freedom. Literally! Like
-                            recycling,
+                            Pic up trash, pick up freedom. Literally! Like
+                            recycling, but for democracy. The first pic of trash
+                            uploaded gets you a token to say something in a
+                            promptocracy/referendum on "What Should We Do Next
+                            As A Country?". Note: Every photo uploaded will be
+                            archived in our country's digital archive. Created
+                            by you, the people.{" "}
+                            <b>
+                              The big question is. How clean is our country?
+                            </b>
                           </Typography>
-                          <Typography
-                            sx={{
-                              fontStyle: "italic",
-                              fontSize: isMobile ? 28 : 16,
-                            }}
-                            variant="body1"
-                            color="text.secondary"
-                          >
-                            but for democracy. Every piece of trash picked up
-                          </Typography>
-                          <Typography
-                            sx={{
-                              fontStyle: "italic",
-                              fontSize: isMobile ? 28 : 16,
-                            }}
-                            variant="body1"
-                            color="text.secondary"
-                          >
-                            gets you a token to say something in a promptocracy
-                            on
-                          </Typography>
-                          <Typography
-                            sx={{
-                              fontStyle: "italic",
-                              fontSize: isMobile ? 28 : 16,
-                            }}
-                            variant="body1"
-                            color="text.secondary"
-                          >
-                            "What Should We Do Next As A Country?" referendum.
-                          </Typography>
-                          <Typography
-                            sx={{
-                              fontStyle: "italic",
-                              fontSize: isMobile ? 28 : 16,
-                            }}
-                            variant="body1"
-                            color="text.secondary"
-                          >
-                            Note: Every photo uploaded will be archived in our
-                          </Typography>
-                          <Typography
-                            sx={{
-                              fontStyle: "italic",
-                              fontSize: isMobile ? 28 : 16,
-                            }}
-                            variant="body1"
-                            color="text.secondary"
-                          >
-                            country's digital archive. Create by you, the
-                            people.
-                          </Typography>
-                          <Typography
+                          <span
                             onClick={handleOpenArchive}
-                            sx={{
+                            style={{
                               fontStyle: "italic",
                               fontSize: isMobile ? 28 : 16,
                               color: "#038ebb",
                               cursor: "pointer",
                             }}
-                            color="text.secondary"
                           >
                             View other uploads by citizens.
-                          </Typography>
+                          </span>
                         </Box>
                         <Stack direction="row" spacing={2}>
                           <StyledButton
@@ -480,7 +435,7 @@ const PublicPage = (props) => {
                             What should we do next?
                           </StyledButton>
                         </Stack>
-                      </>
+                      </Box>
                     )}
                     {isUploading && (
                       <Paper
@@ -562,7 +517,6 @@ const PublicPage = (props) => {
                               "& .MuiOutlinedInput-input": {
                                 fontSize: isMobile ? "27px" : "14px",
                               },
-                              width: isMobile ? 800 : 400,
                             }}
                           />
                           <Stack

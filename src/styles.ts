@@ -100,4 +100,13 @@ export const customStyles = {
       fontSize: isMobile ? 40 : 14,
     },
   },
+  cardName: {
+    pt: 1,
+    fontSize: isMobile ? 22 : 16,
+    color: "#35495E",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    whiteSpace: "nowrap",
+    hyphens: "auto",
+  },
 };

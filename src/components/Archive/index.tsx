@@ -64,7 +64,13 @@ const Archive = (props) => {
             The Kenya Archive's
           </Typography>
           <Divider orientation="horizontal" />
-          <Grid container spacing={1} sx={{ mt: 2 }} alignItems="center">
+          <Grid
+            container
+            spacing={1}
+            sx={{ mt: 2 }}
+            alignItems="center"
+            justifyContent={blocks.data.length ? "first-start" : "center"}
+          >
             {blocks.loading ? (
               <Stack
                 direction="row"
