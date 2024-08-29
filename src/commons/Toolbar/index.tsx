@@ -38,6 +38,7 @@ export const ChangeLayout = (props) => {
           bottom: 40,
           right: 30,
           borderRadius: 5,
+          zIndex: 1000,
         }}
       >
         {label}
@@ -93,6 +94,7 @@ export const SecretMessage = (props) => {
           left: 30,
           cursor: "pointer",
           borderRadius: "100%",
+          zIndex: 1000,
         }}
       >
         {label}
