@@ -6,11 +6,12 @@ import {
   Typography,
   Box,
   Stack,
-  Divider,
   CircularProgress,
   Paper,
+  Checkbox,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
+import { useNavigate } from "react-router-dom";
 
 // App related imports
 import Layout from "src/components/Layout";
@@ -23,6 +24,9 @@ import { useAppSelector } from "src/hooks";
 import { isMobile } from "src/helpers";
 import initState from "src/redux/reducers/initState";
 
+const secrets_file = "/text/secret.txt";
+const project_file = "/text/project.txt";
+
 const PublicPage = (props) => {
   const {
     darkMode,
@@ -31,6 +35,7 @@ const PublicPage = (props) => {
     saveVoteAction,
     uploadFileAction,
     trashDetectAction,
+    addToBlockchainAction,
   } = props;
   const [openForm, setOpenForm] = useState(false);
   const [canvote, setCanvote] = useState(false);
@@ -50,22 +55,38 @@ const PublicPage = (props) => {
   const [showSecretMessage, setShowSecretMessage] = useState(false);
   const [secret, setSecret] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
+  const [checkIdentity, setCheckIdentity] = useState(false);
+  const [blob, setBlob] = useState(null);
+  const [isLinked, setIsLinked] = useState(false);
+  const [clickedOpen, setClickedOpen] = useState(false);
+  const [projectName, setProjectName] = useState("");
 
   const theme = useTheme();
   const thought = useAppSelector((state) => state.thought);
   const thoughts = useAppSelector((state) => state.thoughts);
+  const navigate = useNavigate();
 
   const handleOpenForm = () => {
     setAllgoodMessage("");
+    setClickedOpen(true);
     setIsUploadinng(false);
-    setOpenForm(true);
+    if (canvote) {
+      setOpenForm(true);
+    }
   };
 
   useEffect(() => {
-    getThoughtsAction();
+    if (!thoughts.data.length) {
+      getThoughtsAction();
+    }
   }, []);
 
   useEffect(() => {
+    fetchTextContent(project_file).then((text) => {
+      if (text) {
+        setProjectName(text);
+      }
+    });
     setData(thoughts.data);
   }, [thoughts]);
 
@@ -73,6 +94,13 @@ const PublicPage = (props) => {
     name: !!errs["name"],
     description: !!errs["description"],
   });
+
+  const fetchTextContent = (read_file) => {
+    return fetch(read_file)
+      .then((response) => response.text())
+      .then((text) => text)
+      .catch((error) => console.error("Error:", error));
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -83,8 +111,15 @@ const PublicPage = (props) => {
         setErrors({ ...errors, ...parsedErrors });
         setErrorMessages({ ...errorMessages, ...errs });
       } else {
+        fetchTextContent(secrets_file).then((text) => {
+          if (text) {
+            setShowSecretMessage(true);
+            setSecret(text);
+          }
+        });
         setCanvote(false);
         setOpenForm(false);
+        setClickedOpen(false);
         getThoughtsAction();
       }
       setUploadedImage(null);
@@ -175,9 +210,25 @@ const PublicPage = (props) => {
       setShowMessage(false);
       setVerificationError(false);
       setVerificationErrorM("");
+      setUploadedImage(file);
+      setProgress(10);
+      // Compress the image to small
+      import("compressorjs").then((module) => {
+        const Compressor = module.default;
+        new Compressor(file, {
+          quality: 0.2,
+          convertSize: 0,
+          mimeType: "image/jpeg",
+          success(result) {
+            const blobObj = new Blob([result], { type: result.type });
+            setBlob(blobObj);
+          },
+          error(err) {
+            console.log(err.message);
+          },
+        });
+      });
     }
-    setUploadedImage(file);
-    setProgress(10);
   };
 
   const resetStuff = () => {
@@ -185,6 +236,7 @@ const PublicPage = (props) => {
     setProgressMessage("Selecting your image...");
     setCanvote(false);
     setOpenForm(false);
+    setClickedOpen(false);
     setAllgoodMessage("");
   };
 
@@ -215,11 +267,9 @@ const PublicPage = (props) => {
             );
             trashDetectAction(uploadedImage).then((tres) => {
               if (tres.type === "trashdetect/success") {
-                setProgress(100);
-                setShowMessage(true);
-                setProgressMessage("All good. You can submit your input.");
-                setAllgoodMessage("All good. You can submit your input.");
-                setCanvote(true);
+                setProgress(90);
+                setProgressMessage("Checking image identity...");
+                setCheckIdentity(true);
               } else {
                 setProgress(100);
                 setShowMessage(true);
@@ -227,18 +277,38 @@ const PublicPage = (props) => {
                 setVerificationErrorM(tres.payload?.error);
               }
             });
-            // setIsUploadinng(false);
           } else {
             setProgress(100);
             setShowMessage(true);
             setVerificationError(true);
             setVerificationErrorM(res.payload?.error);
           }
-          setUploadedImage(null);
         },
       );
     }
   }, [uploadedImage]);
+
+  useEffect(() => {
+    if (checkIdentity && uploadedImage) {
+      addToBlockchainAction(uploadedImage, blob, projectName).then((res) => {
+        if (res.type === "blockchain/failure") {
+          // Set error messages
+          setProgress(100);
+          setShowMessage(true);
+          setVerificationError(true);
+          setVerificationErrorM(res.payload?.error);
+        } else {
+          setProgress(100);
+          setShowMessage(true);
+          setProgressMessage("All good. You can submit your input.");
+          setAllgoodMessage("All good. You can submit your input.");
+          setCanvote(true);
+        }
+        setCheckIdentity(false);
+        setUploadedImage(null);
+      });
+    }
+  }, [checkIdentity, uploadedImage, blob, projectName]);
 
   useEffect(() => {
     if (showSecretMessage) {
@@ -260,6 +330,14 @@ const PublicPage = (props) => {
 
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
+  };
+
+  const handleOpenArchive = () => {
+    navigate("/karchive");
+  };
+
+  const handleCheckboxChange = (e) => {
+    setIsLinked(e.target.checked);
   };
 
   return (
@@ -291,81 +369,119 @@ const PublicPage = (props) => {
                   }}
                 >
                   <Stack spacing={2}>
-                    <Box>
-                      <Typography sx={{ fontSize: isMobile ? 85 : 47 }}>
-                        The Kosmic Clean up
-                      </Typography>
-                      <Typography
-                        sx={{
-                          fontStyle: "italic",
-                          fontSize: isMobile ? 28 : 16,
-                        }}
-                        variant="body1"
-                        color="text.secondary"
-                      >
-                        Pick up trash, pick up freedom. Literally! Like
-                        recycling,
-                      </Typography>
-                      <Typography
-                        sx={{
-                          fontStyle: "italic",
-                          fontSize: isMobile ? 28 : 16,
-                        }}
-                        variant="body1"
-                        color="text.secondary"
-                      >
-                        but for democracy. Every piece of trash picked up
-                      </Typography>
-                      <Typography
-                        sx={{
-                          fontStyle: "italic",
-                          fontSize: isMobile ? 28 : 16,
-                        }}
-                        variant="body1"
-                        color="text.secondary"
-                      >
-                        gets you a token to say something in a promptocracy on
-                      </Typography>
-                      <Typography
-                        sx={{
-                          fontStyle: "italic",
-                          fontSize: isMobile ? 28 : 16,
-                        }}
-                        variant="body1"
-                        color="text.secondary"
-                      >
-                        "What Should We Do Next As A Country?" referendum.
-                      </Typography>
-                    </Box>
-                    <Stack direction="row" spacing={2}>
-                      <StyledButton
-                        component="label"
-                        role={undefined}
-                        variant="contained"
-                        tabIndex={-1}
-                        disabled={canvote}
-                        onClick={resetStuff}
-                        sx={{ fontSize: isMobile ? 28 : 14 }}
-                      >
-                        Upload a photo of your trash haul
-                        <VisuallyHiddenInput
-                          onChange={handleUpload}
-                          type="file"
-                          accept="image/*"
-                        />
-                      </StyledButton>
-                      <StyledButton
-                        component="label"
-                        role={undefined}
-                        variant="contained"
-                        tabIndex={-1}
-                        disabled={!canvote && isUploading}
-                        onClick={handleOpenForm}
-                        sx={{ fontSize: isMobile ? 28 : 14 }}
-                      >
-                        What should we do next?
-                      </StyledButton>
-                    </Stack>
+                    {!openForm && (
+                      <>
+                        <Box>
+                          <Typography sx={{ fontSize: isMobile ? 85 : 47 }}>
+                            The Kosmic Clean up
+                          </Typography>
+                          <Typography
+                            sx={{
+                              fontStyle: "italic",
+                              fontSize: isMobile ? 28 : 16,
+                            }}
+                            variant="body1"
+                            color="text.secondary"
+                          >
+                            Pick up trash, pick up freedom. Literally! Like
+                            recycling,
+                          </Typography>
+                          <Typography
+                            sx={{
+                              fontStyle: "italic",
+                              fontSize: isMobile ? 28 : 16,
+                            }}
+                            variant="body1"
+                            color="text.secondary"
+                          >
+                            but for democracy. Every piece of trash picked up
+                          </Typography>
+                          <Typography
+                            sx={{
+                              fontStyle: "italic",
+                              fontSize: isMobile ? 28 : 16,
+                            }}
+                            variant="body1"
+                            color="text.secondary"
+                          >
+                            gets you a token to say something in a promptocracy
+                            on
+                          </Typography>
+                          <Typography
+                            sx={{
+                              fontStyle: "italic",
+                              fontSize: isMobile ? 28 : 16,
+                            }}
+                            variant="body1"
+                            color="text.secondary"
+                          >
+                            "What Should We Do Next As A Country?" referendum.
+                          </Typography>
+                          <Typography
+                            sx={{
+                              fontStyle: "italic",
+                              fontSize: isMobile ? 28 : 16,
+                            }}
+                            variant="body1"
+                            color="text.secondary"
+                          >
+                            Note: Every photo uploaded will be archived in our
+                          </Typography>
+                          <Typography
+                            sx={{
+                              fontStyle: "italic",
+                              fontSize: isMobile ? 28 : 16,
+                            }}
+                            variant="body1"
+                            color="text.secondary"
+                          >
+                            country's digital archive. Create by you, the
+                            people.
+                          </Typography>
+                          <Typography
+                            onClick={handleOpenArchive}
+                            sx={{
+                              fontStyle: "italic",
+                              fontSize: isMobile ? 28 : 16,
+                              color: "#038ebb",
+                              cursor: "pointer",
+                            }}
+                            color="text.secondary"
+                          >
+                            View other uploads by citizens.
+                          </Typography>
+                        </Box>
+                        <Stack direction="row" spacing={2}>
+                          <StyledButton
+                            component="label"
+                            role={undefined}
+                            variant="contained"
+                            tabIndex={-1}
+                            disabled={canvote}
+                            onClick={resetStuff}
+                            sx={{ fontSize: isMobile ? 28 : 14 }}
+                          >
+                            Upload a photo of your trash
+                            <VisuallyHiddenInput
+                              onChange={handleUpload}
+                              type="file"
+                              accept="image/*"
+                            />
+                          </StyledButton>
+                          <StyledButton
+                            component="label"
+                            role={undefined}
+                            variant="contained"
+                            tabIndex={-1}
+                            disabled={!canvote && isUploading}
+                            onClick={handleOpenForm}
+                            sx={{ fontSize: isMobile ? 28 : 14 }}
+                          >
+                            What should we do next?
+                          </StyledButton>
+                        </Stack>
+                      </>
+                    )}
                     {isUploading && (
                       <Paper
                         sx={{
@@ -413,18 +529,17 @@ const PublicPage = (props) => {
                         )}
                       </Paper>
                     )}
-                    {openForm && canvote && (
+                    {canvote && openForm && (
                       <Stack spacing={2}>
                         <Box>
-                          <Divider />
                           <Box sx={{ mt: 2 }}>
-                            <Typography variant={isMobile ? "h4" : "h5"}>
+                            <Typography variant={isMobile ? "h2" : "h5"}>
                               Promptocracy
                             </Typography>
                             <Typography
                               sx={{
                                 fontStyle: "italic",
-                                fontSize: isMobile ? 24 : 12,
+                                fontSize: isMobile ? 27 : 12,
                               }}
                               variant="body2"
                               color="text.secondary"
@@ -433,7 +548,7 @@ const PublicPage = (props) => {
                             </Typography>
                           </Box>
                         </Box>
-                        <Stack>
+                        <Stack spacing={1}>
                           <StyledInput
                             id="name"
                             placeholder="Choose a name"
@@ -445,10 +560,55 @@ const PublicPage = (props) => {
                             helperText={errors.name && errorMessages.name}
                             sx={{
                               "& .MuiOutlinedInput-input": {
-                                fontSize: isMobile ? "24px" : "14px",
+                                fontSize: isMobile ? "27px" : "14px",
                               },
+                              width: isMobile ? 800 : 400,
                             }}
                           />
+                          <Stack
+                            direction="row"
+                            alignItems="center"
+                            spacing={1}
+                          >
+                            <Checkbox
+                              checked={isLinked}
+                              onChange={handleCheckboxChange}
+                              size={isMobile ? "large" : "small"}
+                              inputProps={{ "aria-label": "controlled" }}
+                              sx={{
+                                color: "#35495E",
+                                "&.Mui-checked": {
+                                  color: "#35495E",
+                                },
+                              }}
+                            />
+                            <Typography
+                              sx={{
+                                fontSize: isMobile ? 27 : 14,
+                              }}
+                              variant="body2"
+                              color="text.secondary"
+                            >
+                              Link X account to your name
+                            </Typography>
+                          </Stack>
+                          {isLinked && (
+                            <StyledInput
+                              id="link"
+                              placeholder="X profile link"
+                              name="link"
+                              fullWidth
+                              required
+                              onChange={handleChange}
+                              error={errors.link}
+                              helperText={errors.link && errorMessages.link}
+                              sx={{
+                                "& .MuiOutlinedInput-input": {
+                                  fontSize: isMobile ? "27px" : "14px",
+                                },
+                              }}
+                            />
+                          )}
                         </Stack>
                         <Stack spacing={2}>
                           <StyledInput
@@ -458,7 +618,7 @@ const PublicPage = (props) => {
                             fullWidth
                             required
                             multiline
-                            rows={10}
+                            rows={isMobile ? 25 : 10}
                             onChange={handleChange}
                             error={errors.description}
                             helperText={
@@ -466,23 +626,29 @@ const PublicPage = (props) => {
                             }
                             sx={{
                               "& .MuiOutlinedInput-input": {
-                                fontSize: isMobile ? "24px" : "14px",
+                                fontSize: isMobile ? "27px" : "14px",
                               },
                             }}
                           />
                         </Stack>
                         {errors.name && (
                           <ShowError
-                            show={errors.name}
+                            show={payload?.name && errors.name}
                             color="orange"
-                            message="Simply search your name on the list to see all the coins you gathered."
+                            message={
+                              payload?.name &&
+                              "Simply search your name on the list to see all the coins you gathered."
+                            }
                             showBorder={true}
                           />
                         )}
                         <StyledButton
                           onClick={handleSubmit}
                           disabled={errors.name || errors.description}
-                          sx={{ fontSize: isMobile ? 22 : 12, width: "20%" }}
+                          sx={{
+                            fontSize: isMobile ? 30 : 12,
+                            width: isMobile ? "30%" : "20%",
+                          }}
                         >
                           {thought.loading ? (
                             <CircularProgress
@@ -499,7 +665,7 @@ const PublicPage = (props) => {
                       </Stack>
                     )}
                     <ShowError
-                      show={!isUploading && !canvote && openForm}
+                      show={!isUploading && !canvote && clickedOpen}
                       color="#d32f2f"
                       message="Use the upload button to show me your trash. Then you get a prompt."
                       showBorder={true}
@@ -656,6 +822,7 @@ const PublicPage = (props) => {
                             upvotes={item.upvotes}
                             downvotes={item.downvotes}
                             grokcoins={item.grokcoins}
+                            link={item.link}
                           />
                         </Box>
                       ))}

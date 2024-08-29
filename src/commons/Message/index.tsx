@@ -29,7 +29,14 @@ const Message = (props) => {
     grokcoins,
     handleUpvote,
     handleDownvote,
+    link,
   } = props;
+
+  const handleOpenX = () => {
+    if (link) {
+      window.open(link, "_blank");
+    }
+  };
 
   return (
     <>
@@ -46,16 +53,21 @@ const Message = (props) => {
         </Box>
         <Box>
           <Stack direction="row" spacing={1} alignItems="center">
-            <Box>
-              <Typography
-                sx={{
-                  ...customStyles.boldText,
-                  fontSize: isMobile ? 35 : 14,
-                  textTransform: "capitalize",
-                }}
+            <Box onClick={handleOpenX}>
+              <Tooltip
+                title={link ? "Open X corp account" : "No X corp account"}
               >
-                {name}
-              </Typography>
+                <Typography
+                  sx={{
+                    ...customStyles.boldText,
+                    fontSize: isMobile ? 35 : 14,
+                    textTransform: "capitalize",
+                    cursor: "pointer",
+                  }}
+                >
+                  {name}
+                </Typography>
+              </Tooltip>
             </Box>
             <Tooltip title="Verified by uploading">
               <VerifiedUserIcon sx={customStyles.verifiedIcon} />

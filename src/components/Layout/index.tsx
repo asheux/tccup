@@ -61,12 +61,12 @@ const Layout = (props) => {
                   <img
                     className="questlist_logo"
                     src={tccup_logo}
-                    height={isMobile ? "80px" : "30px"}
-                    width={isMobile ? "80px" : "30px"}
+                    height={isMobile ? "80px" : "36px"}
+                    width={isMobile ? "80px" : "36px"}
                   />
                   <Typography
                     sx={{
-                      fontSize: isMobile ? 45 : 18,
+                      fontSize: isMobile ? 45 : 22,
                       fontWeight: 500,
                     }}
                   >
@@ -78,7 +78,7 @@ const Layout = (props) => {
             <Box sx={{ flexGrow: 0, mr: 2, cursor: "pointer" }}>
               <LightModeIcon
                 onClick={toggleTheme}
-                sx={{ width: isMobile ? 80 : 25, height: isMobile ? 80 : 25 }}
+                sx={{ width: isMobile ? 80 : 30, height: isMobile ? 80 : 30 }}
               />
             </Box>
           </StyledToolbar>

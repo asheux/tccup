@@ -6,6 +6,7 @@ import { getThoughtsAction } from "src/redux/actions/thoughts";
 import { saveVoteAction } from "src/redux/actions/vote";
 import { uploadFileAction } from "src/redux/actions/upload";
 import { trashDetectAction } from "src/redux/actions/trashdetect";
+import { addToBlockchainAction } from "src/redux/actions/blockchain";
 
 /**
  * map state to props or updates the
@@ -27,4 +28,5 @@ export default connect(mapStateToProps, {
   saveVoteAction,
   uploadFileAction,
   trashDetectAction,
+  addToBlockchainAction,
 })(PublicPage);

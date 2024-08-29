@@ -2,7 +2,7 @@ import axios from "axios";
 import { getHost } from "src/api";
 
 export const uploadFile = async (setProgressMessage, setProgress, file) => {
-  setProgressMessage("Processing your image...");
+  setProgressMessage("Uploading your image...");
   const uploadCancelToken = axios.CancelToken.source();
 
   try {

@@ -5,6 +5,8 @@ import getThoughtsReducer from "./thoughts";
 import saveVoteReducer from "./vote";
 import uploadFileReducer from "./upload";
 import trashDetectReducer from "./trashdetect";
+import addToBlockchainReducer from "./blockchain";
+import getBlocksReducer from "./blocks";
 
 const rootReducer = combineReducers({
   thought: saveThoughtReducer,
@@ -12,6 +14,8 @@ const rootReducer = combineReducers({
   vote: saveVoteReducer,
   upload: uploadFileReducer,
   trashdetect: trashDetectReducer,
+  blockchain: addToBlockchainReducer,
+  blocks: getBlocksReducer,
 });
 
 export default rootReducer;

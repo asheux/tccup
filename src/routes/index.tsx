@@ -3,6 +3,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import FallBackError from "src/components/FallBackError";
 const PublicPage = lazy(() => import("src/containers/PublicPage"));
+const ProjectsArchive = lazy(() => import("src/components/ProjectsArchive"));
+const Archive = lazy(() => import("src/components/Archive"));
 import { PreviousRouteProvider } from "./context";
 import { Spinner } from "src/commons/Loader";
 import "src/main.css";
@@ -15,6 +17,11 @@ const AppRoutes = (props) => {
           <Routes>
             <Route>
               <Route path="/" element={<PublicPage {...props} />}></Route>
+              <Route
+                path="/karchive"
+                element={<ProjectsArchive {...props} />}
+              ></Route>
+              <Route path="/archives" element={<Archive {...props} />}></Route>
               <Route element={<FallBackError />}></Route>
             </Route>
           </Routes>

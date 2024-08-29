@@ -51,7 +51,7 @@ export const customStyles = {
   },
   messagePopover: {
     overflow: "visible",
-    backgroundColor: "#10161d",
+    backgroundColor: "#038ebb",
     color: "#ffffff",
     filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.32))",
     mt: 1.5,
@@ -63,15 +63,16 @@ export const customStyles = {
       left: 14,
       width: 10,
       height: 10,
-      bgcolor: "#10161d",
+      bgcolor: "#038ebb",
       transform: "translateY(-50%) rotate(45deg)",
     },
   },
   searchResponseAppBar: {
     position: "sticky",
-    top: isMobile ? 100 : 50,
+    top: isMobile ? 172 : 50,
     mr: 2,
     zIndex: 1,
+    mb: isMobile ? 10 : 0,
     borderBottom: `1px solid ${isMobile ? "rgba(0,0,0,0.5)" : "rgba(0,0,0,0.2)"}`,
   },
   responseSearchToolbar: {

@@ -98,6 +98,7 @@ export const SearchResponse = (props) => {
             width: "100%",
             backgroundColor: theme.palette.primary.main,
             boxShadow: 0,
+            p: isMobile ? 3 : 0,
           }}
         >
           <IconButton type="button" sx={{ p: "10px" }} aria-label="search">

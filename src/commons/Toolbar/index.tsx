@@ -27,13 +27,13 @@ export const ChangeLayout = (props) => {
         size="large"
         onClick={handleClick}
         sx={{
-          backgroundColor: "#10161d",
+          backgroundColor: "#038ebb",
           "&:hover": {
-            backgroundColor: "#22303d",
+            backgroundColor: "#036889",
           },
           color: "#ffffff",
           mb: isMobile ? 6 : 0,
-          fontSize: isMobile ? 35 : 11,
+          fontSize: isMobile ? 30 : 11,
           position: "fixed",
           bottom: 40,
           right: 30,
@@ -61,18 +61,18 @@ export const SecretMessage = (props) => {
             ...customStyles.messagePopover,
             position: "fixed",
             bottom: isMobile ? 60 : 0,
-            left: isMobile ? 50 : 40,
+            left: isMobile ? 50 : 30,
           }}
         >
           <Typography
             variant="h6"
-            sx={{ pb: 0.5, fontSize: isMobile ? 50 : 20 }}
+            sx={{ pb: 0.5, fontSize: isMobile ? 50 : 16 }}
           >
             Secret Message
           </Typography>
-          <Typography variant="body2" sx={{ fontSize: isMobile ? 35 : 14 }}>
+          <Typography variant="body2" sx={{ fontSize: isMobile ? 35 : 12 }}>
             {secret
-              ? "The expected behaviour for a system with null rule, of course, is that it immediately dies out for a program like a cellular automata. But since we are going to use a different program; Turing machine, the expected behaviour is for this machine to run forever or up to a finite number that you have set the program to run without changing any state. So if we run the above machine again for some steps, the following should be expected."
+              ? secret
               : "You have not unlocked a secret. Play to unlock."}
           </Typography>
         </Box>
@@ -80,17 +80,18 @@ export const SecretMessage = (props) => {
       <Box
         onClick={handleClick}
         sx={{
-          backgroundColor: "#10161d",
+          backgroundColor: "#038ebb",
           "&:hover": {
-            backgroundColor: "#22303d",
+            backgroundColor: "#036889",
           },
           color: "#ffffff",
           mb: isMobile ? 6 : 0,
-          fontSize: isMobile ? 35 : 16,
+          fontSize: isMobile ? 30 : 14,
           position: "fixed",
           bottom: isMobile ? 30 : 40,
-          p: 3,
+          p: isMobile ? 3 : 2,
           left: 30,
+          cursor: "pointer",
           borderRadius: "100%",
         }}
       >
