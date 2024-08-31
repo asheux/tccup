@@ -27,7 +27,7 @@ export const ChangeLayout = (props) => {
         size="large"
         onClick={handleClick}
         sx={{
-          backgroundColor: "#038ebb",
+          backgroundColor: "#025570",
           "&:hover": {
             backgroundColor: "#036889",
           },
@@ -67,7 +67,7 @@ export const SecretMessage = (props) => {
         >
           <Typography
             variant="h6"
-            sx={{ pb: 0.5, fontSize: isMobile ? 50 : 16 }}
+            sx={{ pb: 0.5, fontSize: isMobile ? 45 : 16 }}
           >
             Secret Message
           </Typography>
@@ -81,7 +81,7 @@ export const SecretMessage = (props) => {
       <Box
         onClick={handleClick}
         sx={{
-          backgroundColor: "#038ebb",
+          backgroundColor: "#025570",
           "&:hover": {
             backgroundColor: "#036889",
           },

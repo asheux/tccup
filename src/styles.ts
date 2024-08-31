@@ -51,7 +51,7 @@ export const customStyles = {
   },
   messagePopover: {
     overflow: "visible",
-    backgroundColor: "#038ebb",
+    backgroundColor: "#025570",
     color: "#ffffff",
     filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.32))",
     mt: 1.5,
@@ -63,7 +63,7 @@ export const customStyles = {
       left: 14,
       width: 10,
       height: 10,
-      bgcolor: "#038ebb",
+      bgcolor: "#025570",
       transform: "translateY(-50%) rotate(45deg)",
     },
   },
