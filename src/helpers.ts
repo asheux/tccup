@@ -13,3 +13,9 @@ export const dateFormatter = (date) =>
 export const dateFormatterNoTime = (date) => moment(date).format("MMM Do YYYY");
 
 export const projects = [{ label: "The Kosmic Clean Up", value: "kosmic" }];
+
+export const searchOptions = {
+  keys: ["name", "thought"],
+  includeScore: true,
+  threshold: 0.3,
+};

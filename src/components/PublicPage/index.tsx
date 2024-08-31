@@ -1,5 +1,6 @@
 // External imports
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
+import Fuse from "fuse.js";
 import {
   Grid,
   Container,
@@ -12,6 +13,7 @@ import {
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
+import { debounce } from "lodash";
 
 // App related imports
 import Layout from "src/components/Layout";
@@ -21,7 +23,7 @@ import { StyledInput, ShowError, SearchResponse } from "src/commons/Inputs";
 import { LinearProgressWithLabel } from "src/commons/Loader";
 import { customStyles } from "src/styles";
 import { useAppSelector } from "src/hooks";
-import { isMobile } from "src/helpers";
+import { isMobile, searchOptions } from "src/helpers";
 import initState from "src/redux/reducers/initState";
 
 const secrets_file = "/text/secret.txt";
@@ -60,6 +62,8 @@ const PublicPage = (props) => {
   const [isLinked, setIsLinked] = useState(false);
   const [clickedOpen, setClickedOpen] = useState(false);
   const [projectName, setProjectName] = useState("");
+  const [fetched, setFetched] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
 
   const theme = useTheme();
   const thought = useAppSelector((state) => state.thought);
@@ -329,7 +333,17 @@ const PublicPage = (props) => {
   };
 
   const handleSearchChange = (e) => {
-    setSearchTerm(e.target.value);
+    const { value } = e.target;
+    setSearchTerm(value);
+    if (value) {
+      setIsSearching(true);
+    } else {
+      setIsSearching(false);
+      if (fetched) {
+        getThoughtsAction();
+        setFetched(false);
+      }
+    }
   };
 
   const handleOpenArchive = () => {
@@ -339,6 +353,52 @@ const PublicPage = (props) => {
   const handleCheckboxChange = (e) => {
     setIsLinked(e.target.checked);
   };
+
+  const fetchOptions = async (_value) => {
+    try {
+      const result = await getThoughtsAction({ search: _value });
+      if (result.type === "thoughts/success") {
+        setFetched(true);
+        setData(result.payload);
+        if (!result.payload.length) {
+          setIsSearching(false);
+        }
+      } else {
+        setFetched(false);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const debouncedFetchOptions = useCallback(
+    debounce(async (v) => {
+      await fetchOptions(v);
+    }, 1000),
+    [],
+  );
+
+  useEffect(() => {
+    if (thoughts.data.length) {
+      if (searchTerm) {
+        const fuse = new Fuse(thoughts.data, searchOptions);
+        const result = fuse.search(searchTerm);
+        const out = result.map((r) => r.item);
+        if (!out.length) {
+          debouncedFetchOptions(searchTerm);
+        } else {
+          setData(out);
+        }
+      } else {
+        setData(thoughts.data);
+      }
+    } else if (searchTerm && isSearching) {
+      debouncedFetchOptions(searchTerm);
+    }
+    return () => {
+      debouncedFetchOptions.cancel();
+    };
+  }, [thoughts.data, isSearching, searchTerm, debouncedFetchOptions]);
 
   return (
     <React.Fragment>
@@ -390,8 +450,16 @@ const PublicPage = (props) => {
                             As A Country?". Note: Every photo uploaded will be
                             archived in our country's digital archive. Created
                             by you, the people.{" "}
+                          </Typography>
+                          <Typography
+                            sx={{
+                              fontStyle: "italic",
+                              fontSize: isMobile ? 28 : 16,
+                            }}
+                          >
                             <b>
-                              The big question is. How clean is our country?
+                              The big question to consider is: How clean is your
+                              country?
                             </b>
                           </Typography>
                           <span
@@ -649,8 +717,19 @@ const PublicPage = (props) => {
                       pt: 15,
                     }}
                   >
+                    <SearchResponse
+                      handleSearchChange={handleSearchChange}
+                      searchTerm={searchTerm}
+                    />
                     {thoughts.loading && !data.length ? (
-                      <Box>
+                      <Box
+                        sx={{
+                          ...customStyles.centerStuff,
+                          ...positionStyle,
+                          height: "80vh",
+                          width: "100vw",
+                        }}
+                      >
                         <CircularProgress
                           variant="indeterminate"
                           disableShrink
@@ -660,7 +739,14 @@ const PublicPage = (props) => {
                         />
                       </Box>
                     ) : !thoughts.data.length && !data.length ? (
-                      <Box>
+                      <Box
+                        sx={{
+                          ...customStyles.centerStuff,
+                          ...positionStyle,
+                          height: "80vh",
+                          width: "100vw",
+                        }}
+                      >
                         <Typography
                           sx={{
                             fontStyle: "italic",
@@ -669,22 +755,19 @@ const PublicPage = (props) => {
                           variant="body1"
                           color="text.secondary"
                         >
-                          Congratulations! You get to be the first to say
-                          something!
+                          {searchTerm
+                            ? `No response for "${searchTerm}"`
+                            : "Congratulations! You get to be the first to say something!"}
                         </Typography>
                       </Box>
                     ) : (
                       <>
-                        <SearchResponse
-                          handleSearchChange={handleSearchChange}
-                          searchTerm={searchTerm}
-                        />
                         {data.map((item) => (
                           <Box
                             key={item.id}
-                            className="ratings-reviews-body"
                             sx={{
                               color: theme.palette.text.primary,
+                              width: "100vw",
                             }}
                           >
                             <Message
@@ -709,18 +792,10 @@ const PublicPage = (props) => {
               <Grid
                 item
                 xs={4}
-                sx={
-                  (thoughts.loading && !data.length) ||
-                  (!thoughts.data.length && !data.length)
-                    ? {
-                        ...customStyles.centerStuff,
-                        ...positionStyle,
-                      }
-                    : {
-                        ...customStyles.scrollableBox,
-                        ...positionStyle,
-                      }
-                }
+                sx={{
+                  ...customStyles.scrollableBox,
+                  ...positionStyle,
+                }}
               >
                 <Box
                   sx={{
@@ -728,8 +803,18 @@ const PublicPage = (props) => {
                     pt: 8,
                   }}
                 >
+                  <SearchResponse
+                    handleSearchChange={handleSearchChange}
+                    searchTerm={searchTerm}
+                  />
                   {thoughts.loading && !data.length ? (
-                    <Box>
+                    <Box
+                      sx={{
+                        ...customStyles.centerStuff,
+                        ...positionStyle,
+                        height: "80vh",
+                      }}
+                    >
                       <CircularProgress
                         variant="indeterminate"
                         disableShrink
@@ -739,7 +824,13 @@ const PublicPage = (props) => {
                       />
                     </Box>
                   ) : !thoughts.data.length && !data.length ? (
-                    <Box>
+                    <Box
+                      sx={{
+                        ...customStyles.centerStuff,
+                        ...positionStyle,
+                        height: "80vh",
+                      }}
+                    >
                       <Typography
                         sx={{
                           fontStyle: "italic",
@@ -748,16 +839,13 @@ const PublicPage = (props) => {
                         variant="body1"
                         color="text.secondary"
                       >
-                        Congratulations! You get to be the first to say
-                        something!
+                        {searchTerm
+                          ? `No response for "${searchTerm}"`
+                          : "Congratulations! You get to be the first to say something!"}
                       </Typography>
                     </Box>
                   ) : (
                     <>
-                      <SearchResponse
-                        handleSearchChange={handleSearchChange}
-                        searchTerm={searchTerm}
-                      />
                       {data.map((item) => (
                         <Box
                           key={item.id}
