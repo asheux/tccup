@@ -15,7 +15,7 @@ import VerifiedUserIcon from "@mui/icons-material/VerifiedUser";
 import { customStyles } from "src/styles";
 import { isMobile, dateFormatter } from "src/helpers";
 
-const tccup_logo = "/icons/tccup.png";
+const tccup_logo = "/icons/profile.png";
 const grokcoin = "/icons/grokcoin.png";
 
 const Message = (props) => {

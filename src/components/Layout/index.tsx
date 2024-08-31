@@ -61,8 +61,8 @@ const Layout = (props) => {
                   <img
                     className="questlist_logo"
                     src={tccup_logo}
-                    height={isMobile ? "80px" : "36px"}
-                    width={isMobile ? "80px" : "36px"}
+                    height={isMobile ? "80px" : "30px"}
+                    width={isMobile ? "80px" : "30px"}
                   />
                   <Typography
                     sx={{
@@ -70,7 +70,7 @@ const Layout = (props) => {
                       fontWeight: 500,
                     }}
                   >
-                    Kcup
+                    enyasparks
                   </Typography>
                 </Stack>
               </Link>

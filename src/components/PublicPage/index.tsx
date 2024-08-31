@@ -409,7 +409,7 @@ const PublicPage = (props) => {
         setShowSecretMessage={setShowSecretMessage}
         secret={secret}
         label={
-          showOtherResponses ? "Create your response" : "View other's responses"
+          showOtherResponses ? "Create your response" : "View all responses"
         }
       >
         <Container
@@ -471,7 +471,7 @@ const PublicPage = (props) => {
                               cursor: "pointer",
                             }}
                           >
-                            View other uploads by citizens.
+                            View all uploads by citizens.
                           </span>
                         </Box>
                         <Stack direction="row" spacing={2}>
