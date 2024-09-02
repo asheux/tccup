@@ -86,7 +86,7 @@ const Layout = (props) => {
       </AppBar>
       {children}
       <Footer
-        data={`@ ${new Date().getFullYear()}, Kenyasparks by Blus Vikjel (@vikjel).`}
+        data={`@ ${new Date().getFullYear()}, Kenyasparks by Blus Vikjel (@vikjel on X).`}
         theme={theme}
       />
       <ChangeLayout handleClick={handleChangeLayout} label={label} />
