@@ -433,7 +433,7 @@ const PublicPage = (props) => {
                       <Box>
                         <Box sx={{ mb: 2 }}>
                           <Typography sx={{ fontSize: isMobile ? 85 : 47 }}>
-                            The Kosmic Clean up
+                            The Ex-Promptocracy
                           </Typography>
                           <Typography
                             sx={{
@@ -446,10 +446,9 @@ const PublicPage = (props) => {
                             Pic up trash, pick up freedom. Literally! Like
                             recycling, but for democracy. The first pic of trash
                             uploaded gets you a token to say something in a
-                            promptocracy/referendum on "What Should We Do Next
+                            promptocracy on "What Should We Do Next
                             As A Country?". Note: Every photo uploaded will be
-                            archived in our country's digital archive. Created
-                            by you, the people.{" "}
+                            archived in the country's digital archive.{" "}
                           </Typography>
                           <Typography
                             sx={{
