@@ -74,9 +74,16 @@ const PublicPage = (props) => {
     setAllgoodMessage("");
     setClickedOpen(true);
     setIsUploadinng(false);
-    if (canvote) {
-      setOpenForm(true);
-    }
+    setOpenForm(true);
+    // if (canvote) {
+    //   setOpenForm(true);
+    // }
+  };
+
+  const handleCloseForm = () => {
+    setOpenForm(false);
+    setShowSecretMessage(false);
+    setErrors(initState.errors);
   };
 
   useEffect(() => {
@@ -432,8 +439,8 @@ const PublicPage = (props) => {
                     {!openForm && (
                       <Box>
                         <Box sx={{ mb: 2 }}>
-                          <Typography sx={{ fontSize: isMobile ? 85 : 47 }}>
-                            The Ex-Promptocracy
+                          <Typography sx={{ fontSize: isMobile ? 80 : 45 }}>
+                            The Exp-Promptocracy
                           </Typography>
                           <Typography
                             sx={{
@@ -443,12 +450,15 @@ const PublicPage = (props) => {
                             variant="body1"
                             color="text.secondary"
                           >
-                            Pic up trash, pick up freedom. Literally! Like
-                            recycling, but for democracy. The first pic of trash
-                            uploaded gets you a token to say something in a
-                            promptocracy on "What Should We Do Next
-                            As A Country?". Note: Every photo uploaded will be
-                            archived in the country's digital archive.{" "}
+                            Kenya at a crossroads: What's the way forward? The
+                            country is experiencing a storm of economic and
+                            political challenges. From the rising cost of
+                            living, public distrust in leadership and no clear
+                            path to political unity. The fear around is Kenya
+                            could plunge further into instability. Get involved,
+                            share your thoughts and ideas because every voice
+                            matters.
+                            <br />
                           </Typography>
                           <Typography
                             sx={{
@@ -457,8 +467,7 @@ const PublicPage = (props) => {
                             }}
                           >
                             <b>
-                              The big question to consider is: How clean is your
-                              country?
+                              The big question is: How do we turn things around?
                             </b>
                           </Typography>
                           <span
@@ -483,7 +492,7 @@ const PublicPage = (props) => {
                             onClick={resetStuff}
                             sx={{ fontSize: isMobile ? 28 : 14 }}
                           >
-                            Upload a photo of your trash
+                            Upload trash pic (Optional)
                             <VisuallyHiddenInput
                               onChange={handleUpload}
                               type="file"
@@ -495,11 +504,10 @@ const PublicPage = (props) => {
                             role={undefined}
                             variant="contained"
                             tabIndex={-1}
-                            disabled={!canvote && isUploading}
                             onClick={handleOpenForm}
                             sx={{ fontSize: isMobile ? 28 : 14 }}
                           >
-                            What should we do next?
+                            Submit your thoughts & ideas
                           </StyledButton>
                         </Stack>
                       </Box>
@@ -551,7 +559,7 @@ const PublicPage = (props) => {
                         )}
                       </Paper>
                     )}
-                    {canvote && openForm && (
+                    {openForm && (
                       <Stack spacing={2}>
                         <Box>
                           <Box sx={{ mt: 2 }}>
@@ -663,34 +671,50 @@ const PublicPage = (props) => {
                             showBorder={true}
                           />
                         )}
-                        <StyledButton
-                          onClick={handleSubmit}
-                          disabled={errors.name || errors.description}
-                          sx={{
-                            fontSize: isMobile ? 30 : 12,
-                            width: isMobile ? "30%" : "20%",
-                          }}
-                        >
-                          {thought.loading ? (
-                            <CircularProgress
-                              variant="indeterminate"
-                              disableShrink
-                              sx={{ color: "#ffffff" }}
-                              size={customStyles.spinnerSize}
-                              thickness={4}
-                            />
-                          ) : (
-                            "Submit"
-                          )}
-                        </StyledButton>
+                        <Box>
+                          <StyledButton
+                            onClick={handleSubmit}
+                            disabled={errors.name || errors.description}
+                            sx={{
+                              fontSize: isMobile ? 30 : 12,
+                              width: isMobile ? "30%" : "20%",
+                            }}
+                          >
+                            {thought.loading ? (
+                              <CircularProgress
+                                variant="indeterminate"
+                                disableShrink
+                                sx={{ color: "#ffffff" }}
+                                size={customStyles.spinnerSize}
+                                thickness={4}
+                              />
+                            ) : (
+                              "Submit"
+                            )}
+                          </StyledButton>
+                          <StyledButton
+                            onClick={handleCloseForm}
+                            sx={{
+                              fontSize: isMobile ? 30 : 12,
+                              width: isMobile ? "30%" : "20%",
+                              float: "right",
+                            }}
+                          >
+                            {thought.loading ? (
+                              <CircularProgress
+                                variant="indeterminate"
+                                disableShrink
+                                sx={{ color: "#ffffff" }}
+                                size={customStyles.spinnerSize}
+                                thickness={4}
+                              />
+                            ) : (
+                              "Cancel"
+                            )}
+                          </StyledButton>
+                        </Box>
                       </Stack>
                     )}
-                    <ShowError
-                      show={!isUploading && !canvote && clickedOpen}
-                      color="#d32f2f"
-                      message="Use the upload button to show me your trash. Then you get a prompt."
-                      showBorder={true}
-                    />
                   </Stack>
                 </Box>
               </Grid>
