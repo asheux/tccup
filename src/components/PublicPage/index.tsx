@@ -451,7 +451,7 @@ const PublicPage = (props) => {
                           sx={{
                             mb: 2,
                             mt: isMobile ? 0 : 3,
-                            border: `1px solid ${darkMode ? "#22303d" : "rgba(0,0,0,0.2)"}`,
+                            border: `1px solid ${darkMode ? "#000000" : "rgba(0,0,0,0.2)"}`,
                             p: 1,
                           }}
                         >
