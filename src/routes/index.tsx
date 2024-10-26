@@ -7,20 +7,19 @@ const PublicPage = lazy(() => import("src/containers/PublicPage"));
 import { Spinner } from "src/commons/Loader";
 import "src/main.css";
 
-const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <PublicPage />,
-    children: [
-      {
-        path: "*",
-        element: <PublicPage />,
-      },
-    ],
-  },
-]);
-
-const AppRoutes = () => {
+const AppRoutes = (props) => {
+  const router = createBrowserRouter([
+    {
+      path: "/",
+      element: <PublicPage {...props} />,
+      children: [
+        {
+          path: "*",
+          element: <PublicPage {...props} />,
+        },
+      ],
+    },
+  ]);
   return (
     <Suspense fallback={<Spinner />}>
       <RouterProvider router={router} fallbackElement={<Spinner />} />
