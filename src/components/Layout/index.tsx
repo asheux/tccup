@@ -44,7 +44,7 @@ const Layout = (props) => {
         sx={{
           boxShadow: 1,
           backgroundColor: theme.palette.primary.main,
-          zIndex: 1302,
+          zIndex: 10,
         }}
       >
         <Container maxWidth="xl">

@@ -15,7 +15,7 @@ import VerifiedUserIcon from "@mui/icons-material/VerifiedUser";
 import { customStyles } from "src/styles";
 import { isMobile, dateFormatter } from "src/helpers";
 
-const tccup_logo = "/icons/profile.png";
+const tccup_logo = "/icons/tccup.png";
 const grokcoin = "/icons/grokcoin.png";
 
 const Message = (props) => {
@@ -69,7 +69,7 @@ const Message = (props) => {
                 </Typography>
               </Tooltip>
             </Box>
-            <Tooltip title="Verified by uploading">
+            <Tooltip title="Verified Username">
               <VerifiedUserIcon sx={customStyles.verifiedIcon} />
             </Tooltip>
             <Divider

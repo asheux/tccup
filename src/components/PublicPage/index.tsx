@@ -10,15 +10,16 @@ import {
   CircularProgress,
   Paper,
   Checkbox,
+  Modal,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 import { debounce } from "lodash";
 
 // App related imports
 import Layout from "src/components/Layout";
 import Message from "src/commons/Message";
-import { StyledButton, VisuallyHiddenInput } from "src/commons/Buttons";
+import { StyledButton } from "src/commons/Buttons";
 import { StyledInput, ShowError, SearchResponse } from "src/commons/Inputs";
 import { LinearProgressWithLabel } from "src/commons/Loader";
 import { customStyles } from "src/styles";
@@ -28,6 +29,7 @@ import initState from "src/redux/reducers/initState";
 
 const secrets_file = "/text/secret.txt";
 const project_file = "/text/project.txt";
+const ppk_image = "/images/ppk.png";
 
 const PublicPage = (props) => {
   const {
@@ -64,11 +66,12 @@ const PublicPage = (props) => {
   const [projectName, setProjectName] = useState("");
   const [fetched, setFetched] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
+  const [openM, setOpenM] = useState(false);
 
   const theme = useTheme();
   const thought = useAppSelector((state) => state.thought);
   const thoughts = useAppSelector((state) => state.thoughts);
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   const handleOpenForm = () => {
     setAllgoodMessage("");
@@ -85,6 +88,9 @@ const PublicPage = (props) => {
     setShowSecretMessage(false);
     setErrors(initState.errors);
   };
+
+  const handleOpenM = () => setOpenM(true);
+  const handleCloseM = () => setOpenM(false);
 
   useEffect(() => {
     if (!thoughts.data.length) {
@@ -211,45 +217,45 @@ const PublicPage = (props) => {
     saveVoteAction(id, { vote: newVote }, "downvote");
   };
 
-  const handleUpload = (e) => {
-    setIsUploadinng(true);
-    const files = e.target.files;
-    const file = files[0];
-    if (!file) {
-      setIsUploadinng(false);
-    } else {
-      setShowMessage(false);
-      setVerificationError(false);
-      setVerificationErrorM("");
-      setUploadedImage(file);
-      setProgress(10);
-      // Compress the image to small
-      import("compressorjs").then((module) => {
-        const Compressor = module.default;
-        new Compressor(file, {
-          quality: 0.2,
-          convertSize: 0,
-          mimeType: "image/jpeg",
-          success(result) {
-            const blobObj = new Blob([result], { type: result.type });
-            setBlob(blobObj);
-          },
-          error(err) {
-            console.log(err.message);
-          },
-        });
-      });
-    }
-  };
+  // const handleUpload = (e) => {
+  //   setIsUploadinng(true);
+  //   const files = e.target.files;
+  //   const file = files[0];
+  //   if (!file) {
+  //     setIsUploadinng(false);
+  //   } else {
+  //     setShowMessage(false);
+  //     setVerificationError(false);
+  //     setVerificationErrorM("");
+  //     setUploadedImage(file);
+  //     setProgress(10);
+  //     // Compress the image to small
+  //     import("compressorjs").then((module) => {
+  //       const Compressor = module.default;
+  //       new Compressor(file, {
+  //         quality: 0.2,
+  //         convertSize: 0,
+  //         mimeType: "image/jpeg",
+  //         success(result) {
+  //           const blobObj = new Blob([result], { type: result.type });
+  //           setBlob(blobObj);
+  //         },
+  //         error(err) {
+  //           console.log(err.message);
+  //         },
+  //       });
+  //     });
+  //   }
+  // };
 
-  const resetStuff = () => {
-    setUploadedImage(null);
-    setProgressMessage("Selecting your image...");
-    setCanvote(false);
-    setOpenForm(false);
-    setClickedOpen(false);
-    setAllgoodMessage("");
-  };
+  // const resetStuff = () => {
+  //   setUploadedImage(null);
+  //   setProgressMessage("Selecting your image...");
+  //   setCanvote(false);
+  //   setOpenForm(false);
+  //   setClickedOpen(false);
+  //   setAllgoodMessage("");
+  // };
 
   useEffect(() => {
     if (isUploading && !canvote) {
@@ -353,9 +359,9 @@ const PublicPage = (props) => {
     }
   };
 
-  const handleOpenArchive = () => {
-    navigate("/karchive");
-  };
+  // const handleOpenArchive = () => {
+  //   navigate("/karchive");
+  // };
 
   const handleCheckboxChange = (e) => {
     setIsLinked(e.target.checked);
@@ -423,7 +429,7 @@ const PublicPage = (props) => {
           maxWidth="xl"
           sx={{
             color: theme.palette.text.primary,
-            boxSizing: isMobile ? "inherit" : "inherit",
+            boxSizing: isMobile ? "inherit" : "none",
           }}
         >
           <Grid container spacing={2} sx={{ height: "100vh" }}>
@@ -435,81 +441,62 @@ const PublicPage = (props) => {
                     height: "100%",
                   }}
                 >
-                  <Stack spacing={2} sx={{ p: 2, width: isMobile ? 850 : 500 }}>
+                  <Stack
+                    spacing={2}
+                    sx={{ p: 2, width: isMobile ? "100%" : "60%" }}
+                  >
                     {!openForm && (
                       <Box>
-                        <Box sx={{ mb: 2 }}>
-                          <Typography sx={{ fontSize: isMobile ? 80 : 45 }}>
-                            The Exp-Promptocracy
-                          </Typography>
-                          <Typography
-                            sx={{
-                              fontStyle: "italic",
-                              fontSize: isMobile ? 28 : 16,
-                            }}
-                            variant="body1"
-                            color="text.secondary"
-                          >
-                            Kenya at a crossroads: What's the way forward? The
-                            country is experiencing a storm of economic and
-                            political challenges. From the rising cost of
-                            living, public distrust in leadership and no clear
-                            path to political unity. The fear around is Kenya
-                            could plunge further into instability. Get involved,
-                            share your thoughts and ideas because every voice
-                            matters.
-                            <br />
-                          </Typography>
-                          <Typography
-                            sx={{
-                              fontStyle: "italic",
-                              fontSize: isMobile ? 28 : 16,
-                            }}
-                          >
-                            <b>
-                              The big question is: How do we turn things around?
-                            </b>
-                          </Typography>
-                          <span
-                            onClick={handleOpenArchive}
-                            style={{
-                              fontStyle: "italic",
-                              fontSize: isMobile ? 28 : 16,
-                              color: "#038ebb",
-                              cursor: "pointer",
-                            }}
-                          >
-                            View all uploads by citizens.
-                          </span>
+                        <Box
+                          sx={{
+                            mb: 2,
+                            mt: isMobile ? 0 : 8,
+                            border: `1px solid ${darkMode ? "#22303d" : "rgba(0,0,0,0.2)"}`,
+                            p: 1,
+                          }}
+                        >
+                          <Box
+                            component="img"
+                            src={ppk_image}
+                            sx={{ mb: 2, width: "100%", cursor: "pointer" }}
+                            onClick={handleOpenM}
+                          />
                         </Box>
-                        <Stack direction="row" spacing={2}>
-                          <StyledButton
-                            component="label"
-                            role={undefined}
-                            variant="contained"
-                            tabIndex={-1}
-                            disabled={canvote}
-                            onClick={resetStuff}
-                            sx={{ fontSize: isMobile ? 28 : 14 }}
-                          >
-                            Upload trash pic (Optional)
-                            <VisuallyHiddenInput
-                              onChange={handleUpload}
-                              type="file"
-                              accept="image/*"
-                            />
-                          </StyledButton>
+                        <Modal
+                          open={openM}
+                          onClose={handleCloseM}
+                          aria-labelledby="enlarged-image-modal"
+                          aria-describedby="A modal to display the enlarged image"
+                        >
+                          <Box
+                            component="img"
+                            src={ppk_image}
+                            sx={{
+                              width: isMobile ? "90%" : "50%",
+                              height: isMobile ? "80%" : "90%",
+                              position: "absolute",
+                              top: "50%",
+                              left: "50%",
+                              transform: "translate(-50%, -50%)",
+                              boxShadow: `4px 0 4px -4px ${darkMode ? "#22303d" : "rgba(0,0,0,0.2)"}`,
+                            }}
+                          />
+                        </Modal>
+                        <Box>
                           <StyledButton
                             component="label"
                             role={undefined}
                             variant="contained"
                             tabIndex={-1}
                             onClick={handleOpenForm}
-                            sx={{ fontSize: isMobile ? 28 : 14 }}
+                            sx={{
+                              fontSize: isMobile ? 28 : 14,
+                              float: "right",
+                            }}
                           >
-                            Submit your thoughts & ideas
+                            Submit your response
                           </StyledButton>
-                        </Stack>
+                        </Box>
                       </Box>
                     )}
                     {isUploading && (
@@ -560,7 +547,10 @@ const PublicPage = (props) => {
                       </Paper>
                     )}
                     {openForm && (
-                      <Stack spacing={2}>
+                      <Stack
+                        spacing={2}
+                        sx={{ width: isMobile ? "100%" : "80%" }}
+                      >
                         <Box>
                           <Box sx={{ mt: 2 }}>
                             <Typography variant={isMobile ? "h2" : "h5"}>
@@ -678,6 +668,7 @@ const PublicPage = (props) => {
                             sx={{
                               fontSize: isMobile ? 30 : 12,
                               width: isMobile ? "30%" : "20%",
+                              float: "right",
                             }}
                           >
                             {thought.loading ? (
@@ -697,20 +688,10 @@ const PublicPage = (props) => {
                             sx={{
                               fontSize: isMobile ? 30 : 12,
                               width: isMobile ? "30%" : "20%",
-                              float: "right",
+                              float: "left",
                             }}
                           >
-                            {thought.loading ? (
-                              <CircularProgress
-                                variant="indeterminate"
-                                disableShrink
-                                sx={{ color: "#ffffff" }}
-                                size={customStyles.spinnerSize}
-                                thickness={4}
-                              />
-                            ) : (
-                              "Cancel"
-                            )}
+                            Cancel
                           </StyledButton>
                         </Box>
                       </Stack>
