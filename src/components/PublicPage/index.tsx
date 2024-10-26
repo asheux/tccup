@@ -453,6 +453,7 @@ const PublicPage = (props) => {
                             mt: isMobile ? 0 : 8,
                             border: `1px solid ${darkMode ? "#22303d" : "rgba(0,0,0,0.2)"}`,
                             p: 1,
+                            height: "50%"
                           }}
                         >
                           <Box
