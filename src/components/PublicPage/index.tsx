@@ -451,7 +451,7 @@ const PublicPage = (props) => {
                           sx={{
                             mb: 2,
                             mt: isMobile ? 0 : 3,
-                            border: `1px solid ${darkMode ? "#000000" : "rgba(0,0,0,0.2)"}`,
+                            border: `1px solid ${darkMode ? "#000000" : "rgba(0,0,0,0.5)"}`,
                             p: 1,
                           }}
                         >
@@ -632,7 +632,7 @@ const PublicPage = (props) => {
                         <Stack spacing={2}>
                           <StyledInput
                             id="thoughts"
-                            placeholder="Let's get your input for a new government."
+                            placeholder="Let's get your input on the new bill attached."
                             name="description"
                             fullWidth
                             required
