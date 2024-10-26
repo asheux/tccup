@@ -450,10 +450,9 @@ const PublicPage = (props) => {
                         <Box
                           sx={{
                             mb: 2,
-                            mt: isMobile ? 0 : 8,
+                            mt: isMobile ? 0 : 3,
                             border: `1px solid ${darkMode ? "#22303d" : "rgba(0,0,0,0.2)"}`,
                             p: 1,
-                            height: "50%"
                           }}
                         >
                           <Box
